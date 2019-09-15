@@ -1,0 +1,8 @@
+*.nupkg
+**/packages/*
+.tools
+
+artifacts/
+stage/
+build/local/
+**/temp/*

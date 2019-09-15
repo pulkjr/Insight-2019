@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<plasterManifest schemaVersion="1.1" templateType="Item" xmlns="http://www.microsoft.com/schemas/PowerShell/Plaster/v1">
+  <metadata>
+    <name>NetAppResource</name>
+    <id>656f5dca-e391-4bb2-9cdc-4511b95203ee</id>
+    <version>1.0.0</version>
+    <title>NetAppResource</title>
+    <description>Use this for creating new NetApp DSC Resources</description>
+    <author>Joseph Pulk</author>
+    <tags></tags>
+  </metadata>
+  <parameters>
+    <parameter name="ResourceName" type="text" prompt="Enter the name of the Class Based Resource" />
+    <parameter name="ResourceDescription" type="text" prompt="Enter a short description of the resource" />
+    <parameter name="Author" type="text" prompt="Enter your fullname" />
+    <parameter name="CurrentSettingsType" type="text" prompt="Enter the type to use for the CurrentSettings" />
+  </parameters>
+  <content>
+    <file destination="Source\DSCClassResources\${PLASTER_PARAM_ResourceName}\" source="" />
+    <templateFile source="Build\PlasterTemplates\ResourceTemplate.psm1" destination="Source\DSCClassResources\${PLASTER_PARAM_ResourceName}\${PLASTER_PARAM_ResourceName}.psm1" />
+    <templateFile source="Build\PlasterTemplates\ResourceManifestTemplate.psd1" destination="Source\DSCClassResources\${PLASTER_PARAM_ResourceName}\${PLASTER_PARAM_ResourceName}.psd1" />
+    <templateFile source="Build\PlasterTemplates\ResourceDiagTestsTemplate.ps1" destination="Source\Diagnostics\Simple\${PLASTER_PARAM_ResourceName}.tests.ps1" />
+    <templateFile source="Build\PlasterTemplates\ResourceUnitTestTemplate.ps1" destination="Tests\Unit\\${PLASTER_PARAM_ResourceName}.tests.ps1" />
+    <templateFile source="Build\PlasterTemplates\ResourceFeature.ps1" destination="Specs\${PLASTER_PARAM_ResourceName}.feature" />
+    <templateFile source="Build\PlasterTemplates\ResourceSteps.ps1" destination="Specs\${PLASTER_PARAM_ResourceName}.Steps.ps1" />
+  </content>
+</plasterManifest>

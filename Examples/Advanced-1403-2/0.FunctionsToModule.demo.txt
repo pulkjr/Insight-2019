@@ -1,0 +1,17 @@
+$global:ProgressPreference = 'SilentlyContinue'
+$cred = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
+$controller = Connect-NcController -Name Cluster01 -Credential $cred -Transient
+Clear-Host
+###################################################################################
+# Welcome to NetApp Insight Session 1403-2
+#
+# Functions and Modules
+#
+# If you are not using functions already I highly advise you to. They provide the ability to call the command from any location no matter the directory.
+# The following piece of code is a script that collects the Volume Moves that are in progress then retypes their objects
+#
+code "$DemoRoot/../Source/Public/Get-NcVolMovesInProgress.script.ps1"
+#
+# To run this we provide the complete path and the parameters for the function.
+#
+./../Source/Public/Get-NcVolMovesInProgress.script.ps1 -Vserver ''

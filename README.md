@@ -1,5 +1,6 @@
-# Insight-2019-1403-2
-Advanced PowerShell Techniques
+# Insight-2019
+Session 1403-2 - Advanced PowerShell Techniques
+Session 1402-1 - Administer Your NetApp Storage Environment Using PowerShell Essentials
 
 ## Who this is for:
 * You have some experience with PowerShell and are looking to write more mature scripts, functions, classes, and modules

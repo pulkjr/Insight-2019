@@ -12,9 +12,13 @@
     CLRVersion           = '4.0'
     RequiredModules      = 'DataONTAP'
     TypesToProcess       = @()
-    FormatsToProcess     = @('Insight.Format.ps1xml')
+    FormatsToProcess     = @('TypeData\Insight.Format.ps1xml')
     RootModule           = 'Insight.psm1'
-    FunctionsToExport    = '*'
+    FunctionsToExport    = @(
+        'Add-NcLunToVm'
+        'Copy-NcIgroup'
+        'Get-NcLunCanonicalName'
+    )
     CmdletsToExport      = ''
     VariablesToExport    = ''
     AliasesToExport      = ''
@@ -25,6 +29,11 @@
     FileList             = @(
         'dscONTAP.psd1'
         'dscONTAP.psm1'
+        'Private/insight.class.ps1'
+        'Private/Invoke-NcCommand.ps1'
+        'Public/Add-NcLunToVm.ps1'
+        'Public/Get-NcLunCanonicalName.ps1'
+        'Public/Copy-NcIgroup.ps1'
     )
     PrivateData          = @{
         BuildNumber = '0'

@@ -25,48 +25,54 @@
 function Copy-NcIgroup
 {
     [CmdletBinding()]
-    [OutputType([DataONTAP.C.Types.Igroup.InitiatorGroupInfo], ParameterSetName = "NaOldPortset")]
-    [OutputType([DataONTAP.C.Types.Igroup.InitiatorGroupInfo], ParameterSetName = "NaNewPortset")]
-    [OutputType([DataONTAP.C.Types.Igroup.InitiatorGroupInfo], ParameterSetName = "NcOldPortset")]
-    [OutputType([DataONTAP.C.Types.Igroup.InitiatorGroupInfo], ParameterSetName = "NcNewPortset")]
+    [OutputType( [DataONTAP.C.Types.Igroup.InitiatorGroupInfo], ParameterSetName = "NaOldPortset" )]
+    [OutputType( [DataONTAP.C.Types.Igroup.InitiatorGroupInfo], ParameterSetName = "NaNewPortset" )]
+    [OutputType( [DataONTAP.C.Types.Igroup.InitiatorGroupInfo], ParameterSetName = "NcOldPortset" )]
+    [OutputType( [DataONTAP.C.Types.Igroup.InitiatorGroupInfo], ParameterSetName = "NcNewPortset" )]
     Param(
         #The object that comes from Get-NaIgroup
-        [Parameter(ParameterSetName = 'NaOldPortset', Mandatory, ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $True)]
-        [Parameter(ParameterSetName = 'NaNewPortset', Mandatory, ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $True)]
+        [Parameter( ParameterSetName = 'NaOldPortset', Mandatory, ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $True )]
+        [Parameter( ParameterSetName = 'NaNewPortset', Mandatory, ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $True )]
         [DataONTAP.Types.Lun.InitiatorGroupInfo]$NaIgroup
         ,
         #The object that comest from Get-NcIgroup
-        [Parameter(ParameterSetName = 'NcOldPortset', Mandatory, ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $True)]
-        [Parameter(ParameterSetName = 'NcNewPortset', Mandatory, ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $True)]
+        [Parameter( ParameterSetName = 'NcOldPortset', Mandatory, ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $True )]
+        [Parameter( ParameterSetName = 'NcNewPortset', Mandatory, ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $True )]
         [DataONTAP.C.Types.Igroup.InitiatorGroupInfo]$NcIgroup
         ,
         #The Name the igroup will be called on the cDOT system.
-        [Parameter(ParameterSetName = 'NaOldPortset', Mandatory)]
-        [Parameter(ParameterSetName = 'NaNewPortset', Mandatory)]
-        [Parameter(ParameterSetName = 'NcOldPortset', Mandatory)]
-        [Parameter(ParameterSetName = 'NcNewPortset', Mandatory)]
+        [Parameter( ParameterSetName = 'NaOldPortset', Mandatory )]
+        [Parameter( ParameterSetName = 'NaNewPortset', Mandatory )]
+        [Parameter( ParameterSetName = 'NcOldPortset', Mandatory )]
+        [Parameter( ParameterSetName = 'NcNewPortset', Mandatory )]
         [String]$NewName
         ,
         #Map the Igroup to an existing PortSet
-        [Parameter(ParameterSetName = 'NcOldPortset', Mandatory)]
-        [Parameter(ParameterSetName = 'NaOldPortset', Mandatory)]
+        [Parameter( ParameterSetName = 'NcOldPortset', Mandatory )]
+        [Parameter( ParameterSetName = 'NaOldPortset', Mandatory )]
         [String]$PortSet
         ,
         #The name of a new portset
-        [Parameter(ParameterSetName = 'NcNewPortset', Mandatory)]
-        [Parameter(ParameterSetName = 'NaNewPortset', Mandatory)]
+        [Parameter( ParameterSetName = 'NcNewPortset', Mandatory )]
+        [Parameter( ParameterSetName = 'NaNewPortset', Mandatory )]
         [String]$NewPortSetName
         ,
+        #The name of a new portset type
+        [Parameter( ParameterSetName = 'NcNewPortset', Mandatory )]
+        [Parameter( ParameterSetName = 'NaNewPortset', Mandatory )]
+        [ValidateSet( 'fcp', 'iscsi', 'mixed' )]
+        [String]$NewPortSetType
+        ,
         #The ports that you want to add to the new portset. e.g. fc01,fc02,fc03,fc04
-        [Parameter(ParameterSetName = 'NcNewPortset', Mandatory)]
-        [Parameter(ParameterSetName = 'NaNewPortset', Mandatory)]
+        [Parameter( ParameterSetName = 'NcNewPortset', Mandatory )]
+        [Parameter( ParameterSetName = 'NaNewPortset', Mandatory )]
         [String[]]$NewPortSetPorts
         ,
         #The Name of the vserver where this igroup will be created on.
-        [Parameter(ParameterSetName = 'NcOldPortset', Mandatory)]
-        [Parameter(ParameterSetName = 'NcNewPortset', Mandatory)]
-        [Parameter(ParameterSetName = 'NaOldPortset', Mandatory)]
-        [Parameter(ParameterSetName = 'NaNewPortset', Mandatory)]
+        [Parameter( ParameterSetName = 'NcOldPortset', Mandatory )]
+        [Parameter( ParameterSetName = 'NcNewPortset', Mandatory )]
+        [Parameter( ParameterSetName = 'NaOldPortset', Mandatory )]
+        [Parameter( ParameterSetName = 'NaNewPortset', Mandatory )]
         [String]$Vserver
     )
     begin
@@ -75,23 +81,23 @@ function Copy-NcIgroup
         {
             throw "You must be connected to a NetApp cluster in order for this script to work."
         }
-        if ($NewPortSetName)
+        if ( $NewPortSetName )
         {
             try
             {
                 Write-Verbose "Creating PortSet"
 
-                New-NcPortset -Name $NewPortSetName -Protocol fcp -VserverContext $Vserver -ErrorAction stop | Out-Null
+                Invoke-NcComaand -Script { New-NcPortset -Name $NewPortSetName -Protocol $NewPortSetType -VserverContext $Vserver -ErrorAction stop } | Out-Null
 
                 $PortSet = $NewPortSetName
 
                 Write-Verbose " - Adding ports"
 
-                foreach ($port in $NewPortSetPorts)
+                foreach ( $port in $NewPortSetPorts )
                 {
                     Write-Verbose " - > $port"
 
-                    Add-NcPortsetPort -Name $NewPortSetName -Port $Port -VserverContext $Vserver | Out-Null
+                    Invoke-NcComaand -Script { Add-NcPortsetPort -Name $NewPortSetName -Port $Port -VserverContext $Vserver } | Out-Null
                 }
             }
             catch
@@ -118,7 +124,7 @@ function Copy-NcIgroup
         {
             Write-Verbose "Creating Igroup"
 
-            New-NcIgroup -Name $NewName -Protocol ( $Igroup.Protocol ) -Type ( $Igroup.Type ) -Portset $PortSet -VserverContext $Vserver -ErrorAction Stop | Out-Null
+            Invoke-NcComaand -Script { New-NcIgroup -Name $NewName -Protocol ( $Igroup.Protocol ) -Type ( $Igroup.Type ) -Portset $PortSet -VserverContext $Vserver -ErrorAction Stop } | Out-Null
 
             Write-Verbose " - Adding Initiators"
 
@@ -126,9 +132,9 @@ function Copy-NcIgroup
             {
                 Write-Verbose " - > $initiator"
                 
-                Add-NcIgroupInitiator -Name $NewName -Initiator $initiator -VserverContext $Vserver | Out-Null
+                Invoke-NcComaand -Script { Add-NcIgroupInitiator -Name $NewName -Initiator $initiator -VserverContext $Vserver } | Out-Null
             }
-            Get-NcIgroup -Name $NewName
+            Invoke-NcComaand -Script { Get-NcIgroup -Name $NewName }
         }
         catch
         {

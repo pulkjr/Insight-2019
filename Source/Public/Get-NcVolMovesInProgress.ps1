@@ -50,7 +50,7 @@
  
     #>
     [CmdletBinding( DefaultParameterSetName = "Set 1" )]
-    [OutputType([psobject], ParameterSetName = "Set 1" )]
+    [OutputType( [psobject], ParameterSetName = "Set 1" )]
     Param(
         #The name of the vserver
         [Parameter( ParameterSetName = 'Set 1' )]

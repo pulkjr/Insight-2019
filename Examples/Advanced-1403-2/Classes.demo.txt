@@ -1,0 +1,99 @@
+$global:ProgressPreference = 'SilentlyContinue'
+Clear-Host
+###################################################################################
+# Welcome to a demo on the NetAppCifsShare resource within the dscONTAP module
+#
+# This resource is used for the lifecycle management of NetApp ONTAP CIFS Shares.
+# This means you can create, modify, and delete a CIFS share via configuration data.
+#
+# To get started you must first install the module.
+#
+# To do this first copy the dscONTAP module contents to:
+#           C:\Program Files\WindowsPowerShell\Modules\dscONTAP
+#
+# You will notice this has already been done for you:
+Get-ChildItem 'C:\Program Files\WindowsPowerShell\Modules\dscONTAP'
+#
+# Before the Module can be used you must first import the
+# dataONTAP toolkit into memory as this is a required module.
+Import-Module dataONTAP
+#
+# You can now look at the resources within the module
+Get-DscResource -Module dscONTAP
+#
+# You should now be able to look at the syntax of the NetAppCifsShare resource
+Get-DscResource -Name NetAppCifsShare -Module dscONTAP -Syntax
+#
+# With this syntax you can add it to an existing DSC Configuration
+# or call it directly from Invoke-DscResource.
+#
+###################################################################################
+#               Calling directly with Invoke-DscResource
+# Create a variable with the credentials to connect to the NetApp Cluster
+$Credentials = Get-Credential
+#
+# You then need a hash table with all of the configurations
+$NetAppCifsShareConfig = @{
+    Name                   = 'NetAppCifsShare_GherkinTest$'
+    Path                   = '/'
+    Vserver                = 'TestSVM'
+    Controller             = '172.16.32.10'
+    Credential             = $Credentials
+    Ensure                 = 'Present'
+    ShareProperties        = @( 'oplocks', 'browsable', 'showsnapshot', 'changenotify' )
+    SymlinkProperties      = @( 'hide' )
+    Comment                = 'Created for Start-Demo'
+    OfflineFilesMode       = 'documents'
+    MaxConnectionsPerShare = 24
+}
+#
+# You can display the contents of the hashtable by executing the variable name
+$NetAppCifsShareConfig
+#
+# With a hashtable in memory you can now Invoke the dsc methods directly
+# There are three methods within DSC
+#   - Get()
+#   - Set()
+#   - Test()
+# The get method pulls the current configuration of the resource and returns it
+Invoke-DscResource -Name NetAppCifsShare -Method Get -ModuleName dscONTAP -Property $NetAppCifsShareConfig
+#
+# The set method makes changes to the CIFS Share using configuration as the source of truth
+Invoke-DscResource -Name NetAppCifsShare -Method Set -ModuleName dscONTAP -Property $NetAppCifsShareConfig
+#
+# The test method validates each property of the CIFS Share
+# against the provided configuration hashtable
+Invoke-DscResource -Name NetAppCifsShare -Method Test -ModuleName dscONTAP -Property $NetAppCifsShareConfig
+#
+# You can run the get method again to validate the configuration manually.
+Invoke-DscResource -Name NetAppCifsShare -Method Get -ModuleName dscONTAP -Property $NetAppCifsShareConfig
+#
+# You can also validate from the cli:
+#        vserver cifs share show -vserver TestSVM -share-name NetAppCifsShare_GherkinTest$
+#
+# Because this is configuration we can make changes to it at any point and rerun the set method
+$NetAppCifsShareConfig['Ensure'] = 'Absent'
+#
+Invoke-DscResource -Name NetAppCifsShare -Method Set -ModuleName dscONTAP -Property $NetAppCifsShareConfig
+#
+# You can run the get method again to validate the configuration manually.
+Invoke-DscResource -Name NetAppCifsShare -Method Get -ModuleName dscONTAP -Property $NetAppCifsShareConfig
+#
+# As a final step we can run the test method again to validate we are still within
+# the desired configuration.
+Invoke-DscResource -Name NetAppCifsShare -Method Test -ModuleName dscONTAP -Property $NetAppCifsShareConfig
+#
+Clear-Host
+###################################################################################
+#                      Behavior Driven Development
+#
+# In the spirit of Behavior Driven Development all new dscONTAP features will come with a
+# Gherkin test for the specific scenarios within the feature
+Get-Content "$DemoRoot\..\..\Specs\NetAppCifsShare.feature"
+#
+# The tests can be run using the pester module
+Import-Module Pester
+#
+# Gherkin tests actually run the code against a physical NetApp Cluster.
+# This means the test must have any prerequisites create, e.g. volumes, qtrees, etc.
+Invoke-Gherkin -Path "$DemoRoot\..\..\Specs\"

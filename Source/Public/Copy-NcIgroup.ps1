@@ -57,12 +57,6 @@ function Copy-NcIgroup
         [Parameter( ParameterSetName = 'NaNewPortset', Mandatory )]
         [String]$NewPortSetName
         ,
-        #The name of a new portset type
-        [Parameter( ParameterSetName = 'NcNewPortset', Mandatory )]
-        [Parameter( ParameterSetName = 'NaNewPortset', Mandatory )]
-        [ValidateSet( 'fcp', 'iscsi', 'mixed' )]
-        [String]$NewPortSetType
-        ,
         #The ports that you want to add to the new portset. e.g. fc01,fc02,fc03,fc04
         [Parameter( ParameterSetName = 'NcNewPortset', Mandatory )]
         [Parameter( ParameterSetName = 'NaNewPortset', Mandatory )]
@@ -81,13 +75,25 @@ function Copy-NcIgroup
         {
             throw "You must be connected to a NetApp cluster in order for this script to work."
         }
+        if ( $NaIgroup )
+        {
+            Write-Verbose "Using 7-Mode Igroup Properties"
+
+            $Igroup = $NaIgroup
+        }
+        if ( $NcIgroup )
+        {
+            Write-Verbose "Using cDOT Igroup Properties"
+
+            $Igroup = $NcIgroup
+        }
         if ( $NewPortSetName )
         {
             try
             {
                 Write-Verbose "Creating PortSet"
 
-                Invoke-NcComaand -Script { New-NcPortset -Name $NewPortSetName -Protocol $NewPortSetType -VserverContext $Vserver -ErrorAction stop } | Out-Null
+                Invoke-NcComaand -Script { New-NcPortset -Name $NewPortSetName -Protocol ( $Igroup.Protocol ) -VserverContext $Vserver -ErrorAction stop } | Out-Null
 
                 $PortSet = $NewPortSetName
 
@@ -108,23 +114,22 @@ function Copy-NcIgroup
     }
     process
     {
-        if ( $NaIgroup )
-        {
-            Write-Verbose "Using 7-Mode Igroup Properties"
-
-            $Igroup = $NaIgroup
-        }
-        if ( $NcIgroup )
-        {
-            Write-Verbose "Using cDOT Igroup Properties"
-
-            $Igroup = $NcIgroup
-        }
         try
         {
             Write-Verbose "Creating Igroup"
 
-            Invoke-NcComaand -Script { New-NcIgroup -Name $NewName -Protocol ( $Igroup.Protocol ) -Type ( $Igroup.Type ) -Portset $PortSet -VserverContext $Vserver -ErrorAction Stop } | Out-Null
+            $newIgroupParam = @{
+                Name           = $NewName
+                Protocol       = ( $Igroup.Protocol ) 
+                Type           = ( $Igroup.Type )
+                VserverContext = $Vserver 
+                ErrorAction    = 'Stop'
+            }
+            if ( $portset )
+            {
+                $newIgroupParam.Add( 'Portset', $PortSet )
+            }
+            Invoke-NcComaand -Script { New-NcIgroup @newIgroupParam } | Out-Null
 
             Write-Verbose " - Adding Initiators"
 

@@ -44,7 +44,7 @@
 ##     - Changed:  Various time and duration strings have better formatting
 ##     - Enhance:  Colors are settable: prompt, command, comment
 ##     - Added:    NoPauseAfterExecute switch removes the extra pause
-##                 If you set this, the next command will be displayed immediately
+##                 if you set this, the next command will be displayed immediately
 ##     - Added:    Auto Execute mode ( FullAuto switch ) runs the rest of the script
 ##                 at an automatic speed set by the AutoSpeed parameter ( or manually )
 ##     - Added:    Automatically append an empty line to the end of the demo script
@@ -86,7 +86,7 @@ function Start-Demo
         $AutoSpeed = 3,
 
         [int]
-        $DelayAfterComment = 1,
+        $DelayAfterComment = 0,
 
         [switch]
         $NoPauseAfterExecute,
@@ -107,10 +107,10 @@ function Start-Demo
     $hostWidth = $RawUI.BufferSize.Width
     $hostTitle = $RawUI.WindowTitle
 
-    If ( $UseMyPrompt.ispresent )
+    if ( $UseMyPrompt.ispresent )
     {
         $OriginalPrompt = Get-Content Function:\prompt
-        Prompt
+        prompt
     }
 
     # More about constructing prompts here: https://technet.microsoft.com/en-us/library/hh847739.aspx
@@ -130,8 +130,6 @@ function Start-Demo
         $RawUI.ForeGroundColor = $_OldColor
         return $inChar.Character
     }
-
-
 
     function Rewind( $lines, $index, $steps = 1 )
     {
@@ -154,14 +152,14 @@ function Start-Demo
 
     Clear-Host
 
-    If ( $StarDelay -gt 0 )
+    if ( $StarDelay -gt 0 )
     {
         Start-Sleep -seconds $StartDelay
     }
 
     $_lines = Get-Content $file
 
-    If ( -not $SkipAddTheEndLine.IsPresent )
+    if ( -not $SkipAddTheEndLine.IsPresent )
     {
         # Append an extra ( do nothing ) line on the end so we can still go back after the last line.
         $_lines += "# The End"
@@ -172,14 +170,13 @@ function Start-Demo
     #Overwrite original prompt ( ? )
     Write-Host -NoNewline -BackgroundColor $backgroundColor -ForegroundColor $promptColor $( " " * $hostWidth )
 
-    If ( -not $SkipAddDemoTime.IsPresent )
+    if ( -not $SkipAddDemoTime.IsPresent )
     {
         Write-Host -NoNewline -BackgroundColor $backgroundColor -ForegroundColor $promptColor @"
-<Demo Started :: $( split-path $file -leaf )>$( ' ' * ( $hostWidth - ( 18 + $( split-path $file -leaf ).Length ) ) )
+<Demo Started :: $( Split-Path $file -leaf )>$( ' ' * ( $hostWidth - ( 18 + $( Split-Path $file -leaf ).Length ) ) )
 "@
     }
-
-    If ( -not ( $SkipInstructions.IsPresent -or $FullAuto.IsPresent ) )
+    if ( -not ( $SkipInstructions.IsPresent -or $FullAuto.IsPresent ) )
     {
         Write-Host -NoNewline -BackgroundColor $backgroundColor -ForegroundColor $promptColor "Press"
         Write-Host -NoNewline -BackgroundColor $backgroundColor -ForegroundColor Red " ? "
@@ -194,7 +191,9 @@ function Start-Demo
     {
         # Put the current command in the Window Title along with the demo duration
         $Dur = [DateTime]::Now - $_StartTime
+
         $RawUI.WindowTitle = "$( if ( $dur.Hours -gt 0 ) { '{0}h ' } )$( if ( $dur.Minutes -gt 0 ) { '{1}m ' } ){2}s   {3}" -f
+
         $dur.Hours, $dur.Minutes, $dur.Seconds, $( $_Lines[$_i] )
 
         # Echo out the commmand to the console with a prompt as though it were real
@@ -207,12 +206,19 @@ function Start-Demo
             Start-Sleep -Seconds $DelayAfterComment
             continue
         }
+        elseif ( $_lines[$_i].Trim( " " ).StartsWith( "~" ) -eq $true ) { 
+            Write-Host -NoNewline -ForegroundColor $commandColor "$( [char]0x2265 ) $( $_lines[$_i] -replace '^[~]', '' )  "
+        }
         else
         {
             Write-Host -NoNewline -ForegroundColor $commandColor "$( [char]0x2265 ) $( $_Lines[$_i] )  "
         }
 
         if ( $FullAuto.IsPresent ) { $FullAutoInt = $true; Start-Sleep $autoSpeed; $ch = [char]13 }
+        elseif ( $_lines[$_i] -match '^[~]' ) { 
+            $ch = [char]13 
+            $_lines[$_i] = $_lines[$_i] -replace '^[~]', ''
+        }
         else { $ch = Read-Char }
 
         switch ( $ch )
@@ -224,7 +230,7 @@ function Start-Demo
 Running demo: $file
 ( n ) Next       ( p ) Previous
 ( q ) Quit       ( s ) Suspend
-( t ) Timecheck  ( v ) View $( split-path $file -leaf )
+( t ) Timecheck  ( v ) View $( Split-Path $file -leaf )
 ( g ) Go to line by number
 ( f ) Find lines by string
 ( a ) Auto Execute mode
@@ -260,7 +266,7 @@ Running demo: $file
                 #Restore original PowerShell host title
                 $RawUI.WindowTitle = $hostTitle
                 #Restore original PowerShell prompt
-                If ( $UseMyPrompt.IsPresent )
+                if ( $UseMyPrompt.IsPresent )
                 {
                     Invoke-Expression
                 }
@@ -354,12 +360,12 @@ Running demo: $file
                 if ( $_expressionBuilder )
                 {
                     [void]$_expressionBuilder.AppendLine().Append( $_lines[$_i] )
-                    Invoke-Expression ( $_expressionBuilder ) | out-default
+                    Invoke-Expression ( $_expressionBuilder ) | Out-Default
                     Remove-Variable -Name "_expressionBuilder"
                 }
                 else
                 {
-                    Invoke-Expression ( $_lines[$_i] ) | out-default
+                    Invoke-Expression ( $_lines[$_i] ) | Out-Default
                 }
                 if ( -not $NoPauseAfterExecute -and -not $FullAutoInt )
                 {
@@ -374,18 +380,22 @@ Running demo: $file
         }
     }
     $dur = [DateTime]::Now - $_StartTime
-    If ( -not $SkipAddDemoTime.IsPresent )
+
+    if ( -not $SkipAddDemoTime.IsPresent )
     {
         Write-Host -ForegroundColor $promptColor $(
             "<Demo Complete -- $( if ( $dur.Hours -gt 0 ) { '{0}h ' } )$( if ( $dur.Minutes -gt 0 ) { '{1}m ' } ){2}s>" -f
             $dur.Hours, $dur.Minutes, $dur.Seconds, [DateTime]::Now.ToLongTimeString() )
+
         Write-Host -ForegroundColor $promptColor $( [DateTime]::now )
     }
     Write-Host
+
     #Restore original PowerShell host title
     $RawUI.WindowTitle = $hostTitle
+
     #Restore original PowerShell prompt
-    If ( $UseMyPrompt.IsPresent )
+    if ( $UseMyPrompt.IsPresent )
     {
         Invoke-Expression -Command "Function Prompt { $OriginalPrompt }" -ErrorAction SilentlyContinue
     }

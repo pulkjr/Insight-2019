@@ -23,54 +23,32 @@
         Vserver         : vmwareSvm 
 #>
 [CmdletBinding()]
-[OutputType([DataONTAP.C.Types.Igroup.InitiatorGroupInfo], ParameterSetName = "NaOldPortset")]
-[OutputType([DataONTAP.C.Types.Igroup.InitiatorGroupInfo], ParameterSetName = "NaNewPortset")]
-[OutputType([DataONTAP.C.Types.Igroup.InitiatorGroupInfo], ParameterSetName = "NcOldPortset")]
-[OutputType([DataONTAP.C.Types.Igroup.InitiatorGroupInfo], ParameterSetName = "NcNewPortset")]
 Param(
     #The object that comes from Get-NaIgroup
-    [Parameter(ParameterSetName = 'NaOldPortset', Mandatory)]
-    [Parameter(ParameterSetName = 'NaNewPortset', Mandatory)]
     [DataONTAP.Types.Lun.InitiatorGroupInfo]
     $NaIgroup
     ,
     #The object that comest from Get-NcIgroup
-    [Parameter(ParameterSetName = 'NcOldPortset', Mandatory)]
-    [Parameter(ParameterSetName = 'NcNewPortset', Mandatory)]
     [DataONTAP.C.Types.Igroup.InitiatorGroupInfo]
     $NcIgroup
     ,
     #The Name the igroup will be called on the cDOT system.
-    [Parameter(ParameterSetName = 'NaOldPortset', Mandatory)]
-    [Parameter(ParameterSetName = 'NaNewPortset', Mandatory)]
-    [Parameter(ParameterSetName = 'NcOldPortset', Mandatory)]
-    [Parameter(ParameterSetName = 'NcNewPortset', Mandatory)]
     [String]
     $NewName
     ,
     #Map the Igroup to an existing PortSet
-    [Parameter(ParameterSetName = 'NcOldPortset', Mandatory)]
-    [Parameter(ParameterSetName = 'NaOldPortset', Mandatory)]
     [String]
     $PortSet
     ,
     #The name of a new portset
-    [Parameter(ParameterSetName = 'NcNewPortset', Mandatory)]
-    [Parameter(ParameterSetName = 'NaNewPortset', Mandatory)]
     [String]
     $NewPortSetName
     ,
     #The ports that you want to add to the new portset. e.g. fc01,fc02,fc03,fc04
-    [Parameter(ParameterSetName = 'NcNewPortset', Mandatory)]
-    [Parameter(ParameterSetName = 'NaNewPortset', Mandatory)]
     [String[]]
     $NewPortSetPorts
     ,
     #The Name of the vserver where this igroup will be created on.
-    [Parameter(ParameterSetName = 'NcOldPortset', Mandatory)]
-    [Parameter(ParameterSetName = 'NcNewPortset', Mandatory)]
-    [Parameter(ParameterSetName = 'NaOldPortset', Mandatory)]
-    [Parameter(ParameterSetName = 'NaNewPortset', Mandatory)]
     [String]
     $Vserver
 )
@@ -78,13 +56,24 @@ if ( -not $global:CurrentNcController )
 {
     throw "You must be connected to a NetApp cluster in order for this script to work. Use Connect-NcController -Name <ClusterName>"
 }
+if ( $NaIgroup )
+{
+    Write-Verbose "Using 7-Mode Igroup Properties"
+
+    $Igroup = $NaIgroup
+}
+if ( $NcIgroup )
+{
+    Write-Verbose "Using cDOT Igroup Properties"
+    $Igroup = $NcIgroup
+}
 if ( $NewPortSetName )
 {
     try
     {
         Write-Verbose "Creating PortSet"
 
-        New-NcPortset -Name $NewPortSetName -Protocol fcp -VserverContext $Vserver -ErrorAction stop | Out-Null
+        New-NcPortset -Name $NewPortSetName -Protocol ( $Igroup.Protocol ) -VserverContext $Vserver -ErrorAction stop | Out-Null
 
         $PortSet = $NewPortSetName
 
@@ -101,17 +90,6 @@ if ( $NewPortSetName )
     {
         Write-Error "There was an error during the creation of the Portset" -ErrorAction stop
     }
-}
-if ( $NaIgroup )
-{
-    Write-Verbose "Using 7-Mode Igroup Properties"
-
-    $Igroup = $NaIgroup
-}
-if ( $NcIgroup )
-{
-    Write-Verbose "Using cDOT Igroup Properties"
-    $Igroup = $NcIgroup
 }
 try
 {
@@ -131,5 +109,5 @@ try
 }
 catch
 {
-    Write-Error "There was an error during the creation of the igroup" -ErrorAction stop
+    Write-Error "There was an error during the creation of the igroup: $_" -ErrorAction stop
 }

@@ -162,22 +162,22 @@
             <Alignment>Left</Alignment>
           </TableColumnHeader>
           <TableColumnHeader>
-            <Label>VolumeFootprintsGB</Label>
+            <Label>VolumeFootprints</Label>
             <Width>18</Width>
             <Alignment>Left</Alignment>
           </TableColumnHeader>
           <TableColumnHeader>
-            <Label>AggregateMetadataGB</Label>
+            <Label>AggregateMetadata</Label>
             <Width>20</Width>
             <Alignment>Left</Alignment>
           </TableColumnHeader>
           <TableColumnHeader>
-            <Label>AggregateSizeGB</Label>
+            <Label>AggregateSize</Label>
             <Width>16</Width>
             <Alignment>Left</Alignment>
           </TableColumnHeader>
           <TableColumnHeader>
-            <Label>PhysicalUsedGB</Label>
+            <Label>PhysicalUsed</Label>
             <Width>15</Width>
             <Alignment>Left</Alignment>
           </TableColumnHeader>
@@ -190,22 +190,22 @@
               </TableColumnItem>
               <TableColumnItem>
                 <ScriptBlock>
-                    [math]::round($_.VolumeFootprints/1gb,2)
+                    ConvertTo-FormattedNumber -Value $_.VolumeFootprints -Type DataSize -NumberFormatString '0.00'
                 </ScriptBlock>
               </TableColumnItem>
               <TableColumnItem>
                 <ScriptBlock>
-                    [math]::round($_.AggregateMetadata/1gb,2)
+                  ConvertTo-FormattedNumber -Value $_.AggregateMetadata -Type DataSize -NumberFormatString '0.00'
                 </ScriptBlock>
               </TableColumnItem>
               <TableColumnItem>
                 <ScriptBlock>
-                    [math]::round($_.AggregateSize/1gb,2)
+                  ConvertTo-FormattedNumber -Value $_.AggregateSize -Type DataSize -NumberFormatString '0.00'
                 </ScriptBlock>
               </TableColumnItem>
               <TableColumnItem>
                 <ScriptBlock>
-                    [math]::round($_.PhysicalUsed/1gb,2)
+                  ConvertTo-FormattedNumber -Value $_.PhysicalUsed -Type DataSize -NumberFormatString '0.00'
                 </ScriptBlock>
               </TableColumnItem>
             </TableColumnItems>

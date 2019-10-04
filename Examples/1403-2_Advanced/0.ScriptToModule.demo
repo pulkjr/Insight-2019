@@ -34,7 +34,7 @@ code "$DemoRoot/../Source/Insight.psd1"
 #
 # A module file or '.psm1' file is executed when the module is imported. All the code is executed. 
 # This is why we use functions. Functions, when executed, are placed into memory for invokation latter.
-code "$DemoRoot/../Source/Insight.psd1"
+code "$DemoRoot/../Source/Insight.psm1"
 #
 # There are many different approaches to psm1 files. For the first scenario we are going to use 'dot' sourcing.
 # The module reads the manifests file list and 'dot' sources / executes the ps1 files. This places the functions

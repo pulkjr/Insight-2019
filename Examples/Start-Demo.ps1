@@ -10,10 +10,11 @@
 ## I've also been adding features as I come across needs for them, and you'll contribute your
 ## improvements back to the PowerShell Script repository as well.
 ##################################################################################################
-## Revision History ( version 3.5.1 )
+## Revision History (version 3.5.1)
 ## 3.5.1 Added:    Padding zeros to command number (JRP)
 ##       Added:	   Converted Script to function
 ##       Changed:  When the > prompt is displayed. It should only display for a pwsh Command
+##       Changed:  $File is now a mandatory parameter
 ## 3.5.0 Added:    StartDelay parameter added
 ##       Added:	   SkipInstructions parameter added
 ##       Added:    The help section 'Improving ideas' added
@@ -56,7 +57,19 @@
 function Start-Demo
 {
     param (
-        $File = ".\demo.txt",
+        [Parameter(Mandatory)]
+        [ValidateScript(
+            {
+                if (-not (Test-Path -Path $_))
+                {
+                    throw 'Input demo file not found'
+                }
+
+                return $true
+            }
+        )]
+        [System.IO.FileInfo]
+        $File,
 
         [int]
         $Command = 0,
@@ -102,12 +115,12 @@ function Start-Demo
         $SkipAddDemoTime
     )
 
-    $DemoRoot = $PSScriptRoot
+    Set-Variable -Name DemoRoot -Value $File.DirectoryName -Scope Local
     $RawUI = $Host.UI.RawUI
     $hostWidth = $RawUI.BufferSize.Width
     $hostTitle = $RawUI.WindowTitle
 
-    if ( $UseMyPrompt.ispresent )
+    if ( $UseMyPrompt.IsPresent )
     {
         $OriginalPrompt = Get-Content Function:\prompt
         prompt
@@ -121,33 +134,29 @@ function Start-Demo
     {
         $_OldColor = $RawUI.ForeGroundColor
         $RawUI.ForeGroundColor = "Red"
-        $inChar = $RawUI.ReadKey( "IncludeKeyUp" )
+        $inChar = $RawUI.ReadKey( "IncludeKeyDown" )
+
         # loop until they press a character, so Shift or Ctrl, etc don't terminate us
         while ( $inChar.Character -eq 0 )
         {
-            $inChar = $RawUI.ReadKey( "IncludeKeyUp" )
+            $inChar = $RawUI.ReadKey( "IncludeKeyDown" )
         }
+
         $RawUI.ForeGroundColor = $_OldColor
+
         return $inChar.Character
     }
 
     function Rewind( $lines, $index, $steps = 1 )
     {
-        $started = $index;
-        $index -= $steps;
+        $started = $index
+        $index -= $steps
         while ( ( $index -ge 0 ) -and ( $lines[$index].Trim( " `t" ).StartsWith( "#" ) ) )
         {
             $index--
         }
         if ( $index -lt 0 ) { $index = $started }
         return $index
-    }
-
-    $file = Resolve-Path $file
-    while ( -not ( Test-Path $file ) )
-    {
-        $file = Read-Host "Please enter the path of your demo script ( Crtl+C to cancel )"
-        $file = Resolve-Path $file
     }
 
     Clear-Host
@@ -176,6 +185,7 @@ function Start-Demo
 <Demo Started :: $( Split-Path $file -leaf )>$( ' ' * ( $hostWidth - ( 18 + $( Split-Path $file -leaf ).Length ) ) )
 "@
     }
+
     if ( -not ( $SkipInstructions.IsPresent -or $FullAuto.IsPresent ) )
     {
         Write-Host -NoNewline -BackgroundColor $backgroundColor -ForegroundColor $promptColor "Press"
@@ -187,7 +197,7 @@ function Start-Demo
     # We use a FOR and an INDEX ( $_i ) instead of a FOREACH because
     # it is possible to start at a different location and/or jump
     # around in the order.
-    for ( $_i = $Command; $_i -lt $_lines.count; $_i++ )
+    for ( $_i = $Command; $_i -lt $_lines.Count; $_i++ )
     {
         # Put the current command in the Window Title along with the demo duration
         $Dur = [DateTime]::Now - $_StartTime
@@ -197,29 +207,44 @@ function Start-Demo
         $dur.Hours, $dur.Minutes, $dur.Seconds, $( $_Lines[$_i] )
 
         # Echo out the commmand to the console with a prompt as though it were real
-        Write-Host -NoNewline -ForegroundColor $promptColor "[$( "{0:000}" -f $_i )] "
+        Write-Host -NoNewline -ForegroundColor $promptColor "[$( "{0:000}" -f ($_i + 1) )] "
 
         # Comments line from file can be write to the console using $commentColor as a text ( not executed )
-        if ( $_lines[$_i].Trim( " " ).StartsWith( "#" ) -or $_lines[$_i].Trim( " " ).Length -le 0 )
+        if ( $_lines[$_i].Trim().StartsWith( "#" ) -or $_lines[$_i].Trim().Length -le 0 )
         {
-            Write-Host -ForegroundColor $commentColor "$( $_Lines[$_i] -replace '^\#','' )  "
+            Write-Host -ForegroundColor $commentColor "$( $_Lines[$_i] -replace '^\#' )  "
+            
             Start-Sleep -Seconds $DelayAfterComment
+
             continue
         }
-        elseif ( $_lines[$_i].Trim( " " ).StartsWith( "~" ) -eq $true ) { 
-            Write-Host -NoNewline -ForegroundColor $commandColor "$( [char]0x2265 ) $( $_lines[$_i] -replace '^[~]', '' )  "
+        elseif ( $_lines[$_i].Trim().StartsWith( "~" ) )
+        { 
+            if ( -not $_lines[$_i].Trim().StartsWith( "~~" ) )
+            {
+                Write-Host -NoNewline -ForegroundColor $commandColor "$( [char]0x2265 ) $( $_lines[$_i] -replace '^[~]+' )  "
+            }
         }
         else
         {
             Write-Host -NoNewline -ForegroundColor $commandColor "$( [char]0x2265 ) $( $_Lines[$_i] )  "
         }
 
-        if ( $FullAuto.IsPresent ) { $FullAutoInt = $true; Start-Sleep $autoSpeed; $ch = [char]13 }
-        elseif ( $_lines[$_i] -match '^[~]' ) { 
-            $ch = [char]13 
-            $_lines[$_i] = $_lines[$_i] -replace '^[~]', ''
+        if ( $FullAuto.IsPresent )
+        {
+            $FullAutoInt = $true
+            Start-Sleep $autoSpeed
+            $ch = [char]13
         }
-        else { $ch = Read-Char }
+        elseif ( $_lines[$_i] -match '^[~]' )
+        { 
+            $ch = [char]13
+            $_lines[$_i] = $_lines[$_i] -replace '^[~]+'
+        }
+        else
+        { 
+            $ch = Read-Char
+        }
 
         switch ( $ch )
         {
@@ -247,30 +272,37 @@ Running demo: $file
             {
                 # Previous
                 Write-Host -ForegroundColor $promptColor "<Back one Line>"
-                while ( $_lines[--$_i].Trim( " " ).StartsWith( "#" ) ) { }
+                
+                while ( $_lines[--$_i].Trim().StartsWith( "#" ) ) { }
+
                 $_i-- # back a line, we're gonna step forward when we loop
             }
             "a"
             {
                 # EXECUTE ( Go Faster )
                 $AutoSpeed = [int]( Read-Host "Pause ( seconds )" )
-                $FullAutoInt = $true;
+                $FullAutoInt = $true
+
                 Write-Host -ForegroundColor $promptColor "<eXecute Remaining Lines>"
+
                 $_i-- # Repeat this line, and then just blow through the rest
             }
             "q"
             {
                 # Quit
                 Write-Host -ForegroundColor $promptColor "<Quiting demo>"
-                $_i = $_lines.count;
+                $_i = $_lines.Count
+                
                 #Restore original PowerShell host title
                 $RawUI.WindowTitle = $hostTitle
+                
                 #Restore original PowerShell prompt
                 if ( $UseMyPrompt.IsPresent )
                 {
                     Invoke-Expression
                 }
-                break;
+
+                break
             }
             "v"
             {
@@ -278,22 +310,28 @@ Running demo: $file
                 $lines[0..( $_i - 1 )] | Write-Host -ForegroundColor Yellow
                 $lines[$_i] | Write-Host -ForegroundColor Green
                 $lines[( $_i + 1 )..$lines.Count] | Write-Host -ForegroundColor Yellow
+
                 $_i-- # back a line, we're gonna step forward when we loop
             }
             "t"
             {
                 # Time Check
                 $dur = [DateTime]::Now - $_StartTime
+
                 Write-Host -ForegroundColor $promptColor $(
                     "{3} -- $( if ( $dur.Hours -gt 0 ) { '{0}h ' } )$( if ( $dur.Minutes -gt 0 ) { '{1}m ' } ){2}s" -f
-                    $dur.Hours, $dur.Minutes, $dur.Seconds, ( [DateTime]::Now.ToShortTimeString() ) )
+                        $dur.Hours, $dur.Minutes, $dur.Seconds, ( [DateTime]::Now.ToShortTimeString() )
+                )
+
                 $_i-- # back a line, we're gonna step forward when we loop
             }
             "s"
             {
                 # Suspend ( Enter Nested Prompt )
                 Write-Host -ForegroundColor $promptColor "<Suspending demo - type 'Exit' to resume>"
+
                 $Host.EnterNestedPrompt()
+
                 $_i-- # back a line, we're gonna step forward when we loop
             }
             "g"
@@ -317,13 +355,17 @@ Running demo: $file
             {
                 # Find by pattern
                 $match = $_lines | Select-String ( Read-Host "search string" )
+                
                 if ( [String]::IsNullOrEmpty( $match ) )
                 {
                     Write-Host -ForegroundColor Red "Can't find a matching line"
                 }
                 else
                 {
-                    $match | ForEach-Object -Process { Write-Host -ForegroundColor $promptColor $( "[{0,2}] {1}" -f ( $_.LineNumber - 1 ), $_.Line ) }
+                    $match | ForEach-Object { 
+                        Write-Host -ForegroundColor $promptColor $( "[{0,2}] {1}" -f ( $_.LineNumber - 1 ), $_.Line )
+                    }
+
                     if ( $match.Count -lt 1 )
                     {
                         $_i = $match.lineNumber - 2 # back a line, we're gonna step forward when we loop
@@ -344,22 +386,28 @@ Running demo: $file
                 {
                     [void]$_expressionBuilder.AppendLine().Append( $_lines[$_i] )
                 }
+
                 Write-Host
+
                 continue
             }
             "c"
             {
                 Clear-Host
+
                 $_i-- # back a line, we're gonna step forward when we loop
             }
             "$( [char]13 )"
             {
                 # on enter
                 Write-Host
+
                 trap [System.Exception] { Write-Error $_; continue; }
+                
                 if ( $_expressionBuilder )
                 {
                     [void]$_expressionBuilder.AppendLine().Append( $_lines[$_i] )
+
                     Invoke-Expression ( $_expressionBuilder ) | Out-Default
                     Remove-Variable -Name "_expressionBuilder"
                 }
@@ -367,14 +415,16 @@ Running demo: $file
                 {
                     Invoke-Expression ( $_lines[$_i] ) | Out-Default
                 }
-                if ( -not $NoPauseAfterExecute -and -not $FullAutoInt )
+                
+                if ( -not $NoPauseAfterExecute.IsPresent -and -not $FullAutoInt )
                 {
                     $null = $RawUI.ReadKey( "NoEcho,IncludeKeyUp" ) # Pause after output for no apparent reason... ; )
                 }
             }
             default
             {
-                Write-Host -ForegroundColor Green "`nKey not recognized.  Press ? for help, or ENTER to execute the command."
+                Write-Host -ForegroundColor Green "`nKey not recognized. Press ? for help, or ENTER to execute the command."
+                
                 $_i-- # back a line, we're gonna step forward when we loop
             }
         }
@@ -389,6 +439,7 @@ Running demo: $file
 
         Write-Host -ForegroundColor $promptColor $( [DateTime]::now )
     }
+
     Write-Host
 
     #Restore original PowerShell host title

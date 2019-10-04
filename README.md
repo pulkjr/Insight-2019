@@ -16,6 +16,9 @@ Session 1402-1 - Administer Your NetApp Storage Environment Using PowerShell Ess
 * Advanced PowerShell Storage Provisioning Lifecycle ( Insight 2018 - Session 11923 )
 
 ## TODO
+- [ ] Converting a script to a module
+    - [ ] Script to Function
+    - [ ] Module Manifest 
 * Script - compare LUNs to VMware canonical names using subfunctions
     * Unit Test it
 * Classes - What they are and where to use them

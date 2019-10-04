@@ -1,0 +1,45 @@
+#~~Set-ConsoleFont -Name 'Lucida Console' -Height 18  # Increase the font size for the room
+
+# Import the NetApp DataONTAP PowerShell module into this session
+Import-Module DataONTAP
+
+# Verify that the module has been imported
+Get-Module -Name DataONTAP
+
+# Connect to the cluster 'den-cdot' (returns a 'NcController' object) - will prompt for credentials
+Connect-NcController -Name den-cdot #-Credential (Get-Credential)
+
+# Connect to a second cluster using the -Add parameter - will prompt for credentials
+Connect-NcController -Name fse-test -Add #-Credential (Get-Credential)
+
+# View the contents of the array variable
+$global:CurrentNcController
+
+# Run Get-NcCluster to show results from both connected systems
+Get-NcCluster
+
+# You can also assign the connection object to a variable instead (useful for scripts).
+# The -Transient parameter prevents the controller object from being added to the $global:CurrentNcController variable
+$cluster = Connect-NcController -Name den-cdot -Transient #-Credential (Get-Credential)
+
+# Show the contents of the $cluster variable
+$cluster
+
+# Reset the global connection variable to be the single cluster we just connected to
+$global:CurrentNcController = $cluster
+~Remove-Variable -Name cluster
+
+# Validate that we only have a single connection object
+$global:CurrentNcController
+
+# Run Get-NcCluster to show the output from that single connection object
+Get-NcCluster
+
+
+
+# Remove snapshots older than 30 days for all volumes in the 'cifstesting' vserver
+# Note the -WhatIf switch -- this forces the Remove function to display the action it will take when invoked without the -WhatIf)
+Get-NcSnapshot -Vserver cifstesting | Where-Object { $_.Created -lt [datetime]::Now.AddDays(-30) } | Remove-NcSnapshot -WhatIf
+
+#####
+#~~Set-ConsoleFont -Name 'Lucida Console' -Height 12

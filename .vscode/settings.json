@@ -1,4 +1,5 @@
 {
+  "powershell.codeFormatting.openBraceOnSameLine": false,
   "files.associations": {
     "*.demo": "powershell"
   }

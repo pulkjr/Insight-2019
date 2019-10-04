@@ -21,16 +21,15 @@
         Initiators      : {10:00:00:90:fa:1c:45:2f, 10:00:00:90:fa:1c:79:2d, 10:00:00:90:fa:1c:79:55,
                         10:00:00:90:fa:1c:79:63...}
         Vserver         : vmwareSvm 
+    .NOTES
+    TODO : Add support for pipeline
+    TODO : Add 7-Mode systems support
+    TODO : Add ability to collect from one cluster and create on another cluster
 #>
-[CmdletBinding()]
 Param(
-    #The object that comes from Get-NaIgroup
-    [DataONTAP.Types.Lun.InitiatorGroupInfo]
-    $NaIgroup
-    ,
-    #The object that comest from Get-NcIgroup
-    [DataONTAP.C.Types.Igroup.InitiatorGroupInfo]
-    $NcIgroup
+    #The name of the Igroup
+    [String]
+    $IgroupName
     ,
     #The Name the igroup will be called on the cDOT system.
     [String]
@@ -56,16 +55,12 @@ if ( -not $global:CurrentNcController )
 {
     throw "You must be connected to a NetApp cluster in order for this script to work. Use Connect-NcController -Name <ClusterName>"
 }
-if ( $NaIgroup )
-{
-    Write-Verbose "Using 7-Mode Igroup Properties"
 
-    $Igroup = $NaIgroup
-}
-if ( $NcIgroup )
+$Igroup = Get-NcIgroup -Name $IgroupName #? Should this command be in here? Shouldn't the user do this from the pipeline?
+
+if ( -Not $Igroup )
 {
-    Write-Verbose "Using cDOT Igroup Properties"
-    $Igroup = $NcIgroup
+    throw "The Igroup $IgroupName could not be found."
 }
 if ( $NewPortSetName )
 {

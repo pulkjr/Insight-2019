@@ -73,12 +73,12 @@
               <TableColumnItem>
                 <ScriptBlock>
                     [math]::round($_.BytesRemaining/1gb,2)
-                  </ScriptBlock>
+                </ScriptBlock>
               </TableColumnItem>
               <TableColumnItem>
                 <ScriptBlock>
                     [math]::round($_.BytesSent/1gb,2)
-                  </ScriptBlock>
+                </ScriptBlock>
               </TableColumnItem>
             </TableColumnItems>
           </TableRowEntry>
@@ -86,7 +86,7 @@
       </TableControl>
     </View>
     <View>
-      <Name>Space</Name>
+      <Name>SpacePercent</Name>
       <ViewSelectedBy>
         <TypeName>DataONTAP.C.Types.Aggr.SpaceInformation</TypeName>
       </ViewSelectedBy>
@@ -143,6 +143,70 @@
               </TableColumnItem>
               <TableColumnItem>
                 <PropertyName>PhysicalUsedPercent</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
+      <Name>Space</Name>
+      <ViewSelectedBy>
+        <TypeName>DataONTAP.C.Types.Aggr.SpaceInformation</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+            <Label>Name</Label>
+            <Width>25</Width>
+            <Alignment>Left</Alignment>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>VolumeFootprintsGB</Label>
+            <Width>18</Width>
+            <Alignment>Left</Alignment>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>AggregateMetadataGB</Label>
+            <Width>20</Width>
+            <Alignment>Left</Alignment>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>AggregateSizeGB</Label>
+            <Width>16</Width>
+            <Alignment>Left</Alignment>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>PhysicalUsedGB</Label>
+            <Width>15</Width>
+            <Alignment>Left</Alignment>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>Aggregate</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                    [math]::round($_.VolumeFootprints/1gb,2)
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                    [math]::round($_.AggregateMetadata/1gb,2)
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                    [math]::round($_.AggregateSize/1gb,2)
+                </ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <ScriptBlock>
+                    [math]::round($_.PhysicalUsed/1gb,2)
+                </ScriptBlock>
               </TableColumnItem>
             </TableColumnItems>
           </TableRowEntry>

@@ -66,9 +66,7 @@
         [Parameter( ParameterSetName = 'Set 1' )]
         [Switch]
         $All
-
     ) 
-
     begin
     {
         if ( -not $global:CurrentNcController )

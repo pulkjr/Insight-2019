@@ -1,0 +1,39 @@
+~$global:ProgressPreference = 'SilentlyContinue'
+~$cred = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
+~Connect-NcController -Name Cluster96 -Credential $cred | Out-Null
+~if(Get-Module Insight){Remove-Module Insight}
+~Clear-Host
+###################################################################################
+# Welcome to NetApp Insight Session 1403-2
+#
+# Formats.ps1xml Demo
+#
+# Formats allow you control over what the user sees from the output. The command Get-NcAggrSpace
+# currently doesn't have a formatted output.
+Get-NcAggrSpace
+#
+# Notice the type of the output object
+( Get-NcAggrSpace )[-1].GetType().FullName
+#
+# You can see the formats available using the following command
+Get-FormatData -TypeName DataONTAP.C.Types.Aggr.SpaceInformation
+#
+# The Format.ps1xml is used to determin how the output is displayed. The last loaded format wins.
+code "$DemoRoot/../TypeData/Insight.Format.ps1xml"
+#
+# Import the module to load the format
+Import-Module "$DemoRoot/../Source/Insight.psd1"
+#
+# When we rerun this command we see a nicely formatted output.
+Get-NcAggrSpace
+#
+# The object is still the same object type and all properties still exist on the object
+( Get-NcAggrSpace )[-1].GetType().FullName
+Get-NcAggrSpace | Format-List
+#
+# You can see the formats available using the following command
+Get-FormatData -TypeName DataONTAP.C.Types.Aggr.SpaceInformation
+#
+# You can use Format-Table to change the displayed output
+Get-NcAggrSpace | Format-Table -View Space
+Get-NcAggrSpace | Format-Table -View SpacePercent

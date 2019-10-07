@@ -78,10 +78,6 @@ task Stage InstallDependencies, Clean, ModuleVersion, {
         [void]( New-Item -ItemType File -Path "$moduleOutputPath\$script:moduleName.psm1" -Force )
     }
     Invoke-CopyFileListFromDevLocation -ModuleName $script:moduleName -ModuleOutputPath $moduleOutputPath
-    #Get-ChildItem -Path "$BuildRoot\Source" -Filter '*.ps1' -Exclude '*.ps1xml' -Recurse | Where-Object { $_.Directory -notlike '*Diagnostics' }| Get-Content -Raw -Force | Add-Content -Path "$moduleOutputPath\$script:moduleName.psm1" -Force
-
-    #Copy-Item -Path "$BuildRoot\Source\$script:moduleName.psd1" -Destination $moduleOutputPath
-    #Get-ChildItem -Path "$BuildRoot\Source\Formats" | Foreach-Object { Copy-Item -Path $_.FullName -Destination "$moduleOutputPath\Formats\$( $_.Name )" -Force }
 
     Write-Build Yellow 'STAGE: Updating module version strings in relevant files'
     Invoke-UpdateModuleVersionInFile -ModuleName $script:moduleName -ModuleOutputPath $moduleOutputPath -Version $Script:ModuleVersion -RevisionNumber $Script:ModuleRevisionNumber -IsPreRelease:$Script:PreRelease
@@ -104,7 +100,7 @@ task Package ModuleVersion, {
     {
         Remove-Item -Path $zipFilePath -Force
     }
-    Write-Build Yellow "Creating ZIP file: $fileName.zip"
+    Write-Build Yellow "PACKAGE: Creating ZIP file: $fileName.zip"
     Compress-Archive -Path $modulePath.FullName -DestinationPath $zipFilePath
 
     $nugetFilePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath( "$Script:ArtifactsPath/$fileName.nupkg" )
@@ -112,7 +108,7 @@ task Package ModuleVersion, {
     {
         Remove-Item -Path $nugetFilePath -Force
     }
-    Write-Build Yellow "Creating Nuget package: $filename.nupkg"
+    Write-Build Yellow "PACKAGE: Creating Nuget package: $filename.nupkg"
 
     if ( -not ( Get-PackageProvider nuget ) )
     {
@@ -191,7 +187,7 @@ task ModuleVersion -If ( -not ( Get-Variable -Name ModuleVersion -Scope Script -
         $Script:ModuleSemVersionString += "-build$Script:ModuleRevisionNumber"
     }
 
-    Write-Build Yellow "Using ModuleVersion number: $Script:ModuleSemVersionString ( $( $Script:ModuleVersion.ToString() ) )"
+    Write-Build Yellow "MODULEVERSION: Using ModuleVersion number: $Script:ModuleSemVersionString ( $( $Script:ModuleVersion.ToString() ) )"
 }
 
 task BuildPackageVersion -If ( -not ( Get-Variable -Name BuildPackageVersion -Scope Script -ErrorAction Ignore ) ) {
@@ -216,4 +212,4 @@ task BuildPackageVersion -If ( -not ( Get-Variable -Name BuildPackageVersion -Sc
     Write-Build Yellow "Using ( BuildPackage ) version number: $( $Script:BuildPackageVersion.ToString() )"
 }
 
-task . InstallDependencies, Stage, Package
+task . Stage, Package

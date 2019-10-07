@@ -1,4 +1,4 @@
-﻿ <#
+﻿<#
     .SYNOPSIS
     Get aggregate space information
  
@@ -19,25 +19,18 @@ function Get-NcAggrSpaceInfo
         [String]
         $Name
     ) 
-    begin
+    if ( -not $global:CurrentNcController )
     {
-        if ( -not $global:CurrentNcController )
-        {
-            Throw 'You are not connected to a NetApp cluster, connect to the desired source cluster'
-        }       
-    }
-    process
-    {
-        
-        $aggrs = Get-NcAggrSpace -Name $Name | Select-Object *
+        Throw 'You are not connected to a NetApp cluster, connect to the desired source cluster'
+    }       
+    $aggrs = Get-NcAggrSpace -Name $Name | Select-Object *
 
-        if ( $aggrs )
+    if ( $aggrs )
+    {
+        foreach ( $aggr in $aggrs )
         {
-            foreach ( $aggr in $aggrs )
-            {
-                $aggr.pstypenames.Insert( 0, 'NetApp.NcAggr.Space' )
-                $aggr
-            }
-        }        
-    }
+            $aggr.pstypenames.Insert( 0, 'NetApp.NcAggr.Space' )
+            $aggr
+        }
+    }        
 }

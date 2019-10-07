@@ -1,7 +1,8 @@
 ~$global:ProgressPreference = 'SilentlyContinue'
+~if( -not ( Get-Module dataONTAP ) ){ Import-Module dataONTAP }
 ~$cred = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
 ~Connect-NcController -Name Cluster96 -Credential $cred | Out-Null
-~if(Get-Module Insight){Remove-Module Insight}
+~if( Get-Module Insight ){ Remove-Module Insight }
 ~Clear-Host
 ###################################################################################
 # Welcome to NetApp Insight Session 1403-2
@@ -67,4 +68,6 @@ Get-NcAggrSpaceInfo
 #
 ( Get-NcAggrSpaceInfo )[-1].GetType().FullName
 #
-( Get-NcAggrSpaceInfo | Get-Members )[-1].typename
+( Get-NcAggrSpaceInfo | Get-Member )[-1].typename
+#
+~Remove-Module Insight

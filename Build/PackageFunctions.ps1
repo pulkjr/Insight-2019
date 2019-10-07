@@ -16,7 +16,7 @@ function Invoke-CopyFileListFromDevLocation
 
     $files += ( Get-ChildItem -Path $BuildRoot/Source -Filter *.ps1 -Exclude *.ps1xml -Recurse ).FullName
 
-    $files += ( Get-ChildItem -Path $BuildRoot/Source/DSCClassResources -Filter *.psm1 -Exclude *.ps1xml -Recurse ).FullName
+    $files += ( Get-ChildItem -Path $BuildRoot/Source/DSCClassResources -Filter *.psm1 -Exclude *.ps1xml -Recurse ).FullName | Sort
 
 
     foreach ($fileName in $files )

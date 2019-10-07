@@ -1,0 +1,56 @@
+~~if ( Get-PSRepository -Name local -ErrorAction 'SilentlyContinue' ){ UnRegister-PSRepository -Name Local -ErrorAction 'SilentlyContinue' }
+###################################################################################
+# Welcome to NetApp Insight Session 1403-2
+#
+# InvokeBuild Demo
+#
+# Now that we have taken a complete look at some functions and the module layout let us review a quick build process.
+# To do this I use the moudle InvokeBuild. InvokeBuild allows us to divide the build process into tasks and fire them
+# off in any order that we desire. This means that our local machines can build different from out server does.
+#
+code "$DemoRoot/../../.build.ps1"
+#
+# This build process will gather the content of each of the ps1 files and put them into a single psm1 file.
+# It will then update the module version based on the the change log.
+#
+# Two main folders will be created durign the build process. artifacts and stage
+Get-ChildItem -Name "$DemoRoot/../.."
+#
+Get-Module -Name Insight -ListAvailable
+#
+# In the .build.ps1 file I have the tasks specified for a generic build. This results in the following command:
+# Invoke-Build -Task InstallDependencies, Stage, Package
+Invoke-Build
+#
+# The Build has created a couple files for release of the module
+Get-ChildItem -Name "$DemoRoot/../../artifacts"
+#
+# A new 'local' repository has been created on my system
+Get-PSRepository -Name local
+#
+# This repoistory has the module that I just built
+#
+Find-Module -Repository Local
+#
+# I can now use Install-Module to load it onto my system.
+#
+Install-Module -Repository Local -Name Insight
+#
+# I can review the newly installed module using the typical commands:
+Import-Module Insight
+#
+Get-Module
+#
+Get-Command -Module Insight
+#
+Get-DscResource -Module Insight
+#
+Get-Help -Name Copy-NcIgroup
+#
+Remove-Module Insight
+#
+Uninstall-Module -Name Insight
+#
+Get-Module -Name Insight -ListAvailable
+#
+# Get

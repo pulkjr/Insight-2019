@@ -153,6 +153,7 @@
       <Name>Space</Name>
       <ViewSelectedBy>
         <TypeName>DataONTAP.C.Types.Aggr.SpaceInformation</TypeName>
+        <TypeName>NetApp.NcAggr.Space</TypeName>
       </ViewSelectedBy>
       <TableControl>
         <TableHeaders>

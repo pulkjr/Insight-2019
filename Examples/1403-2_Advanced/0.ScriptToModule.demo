@@ -1,8 +1,8 @@
-~$global:ProgressPreference = 'SilentlyContinue'
-~$cred = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
-~$controller = Connect-NcController -Name Cluster96 -Credential $cred -Transient
-~$global:CurrentNcController = $null
-~Clear-Host
+~~$global:ProgressPreference = 'SilentlyContinue'
+~~$cred = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
+~~$controller = Connect-NcController -Name Cluster96 -Credential $cred -Transient
+~~$global:CurrentNcController = $null
+~~Clear-Host
 ###################################################################################
 # Welcome to NetApp Insight Session 1403-2
 #
@@ -41,7 +41,7 @@ code "$DemoRoot/../Source/Insight.psm1"
 # into the module scope for use. Now while the module is loaded the functions will be made available.
 # Just like the dataontap module you can load your new module with import-module. For this example lets use the
 # path to the psd1 file.
-Import-Module "$DemoRoot/../Source/Insight.psd1"
+Import-Module "$DemoRoot/../../Source/Insight.psd1"
 #
 # You can validate the module is loaded with Get-Module.
 Get-Module
@@ -51,7 +51,7 @@ Get-Command -Module Insight
 #
 # If you look back at the module manifest you will notice that there is a property called 'FunctionsToExport'
 # Copy-NcIgroup is in that list. Let use now look at that function.
-code "$DemoRoot/../Source/Public/Copy-NcIgroup.psd1"
+code "$DemoRoot/../../Source/Public/Copy-NcIgroup.psd1"
 #
 # Notice the difference from the script. This function was made for 'user' interaction. It was made to make life easier
 # for the person executing the script. It does this by utilizing the pipeline.

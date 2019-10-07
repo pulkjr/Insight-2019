@@ -11,42 +11,6 @@
     C:\PS>Get-NcVolMoveInProgress
 
         Get all of the volume move operations.
-
-        ActualCompletionTimestamp            :
-        ActualDuration                       : 4
-        BytesRemaining                       :
-        BytesSent                            :
-        CompletionCode                       :
-        CompletionStatus                     :
-        CutoverAction                        : defer_on_failure
-        CutoverAttemptedCount                : 0
-        CutoverAttempts                      : 3
-        CutoverHardDeferredCount             : 0
-        CutoversSoftDeferredCount            : 0
-        CutoverTriggerTimestamp              :
-        CutoverWindow                        : 45
-        DestinationAggregate                 : aggr2
-        DestinationNode                      : tesla-01
-        Details                              : Volume move job in setup
-        EstimatedCompletionTime              :
-        EstimatedRemainingDuration           :
-        ExecutionProgress                    : Volume move job in setup
-        InternalState                        : Setup
-        JobId                                : 29
-        JobUuid                              : 0ccc0fb4-ca96-11e1-a2e1-123478563412
-        LastCutoverTriggerTimestamp          :
-        ManagingNode                         : tesla-01
-        NcController                         : 192.168.182.119
-        PercentComplete                      :
-        Phase                                : initializing
-        PriorIssues                          :
-        ReplicationThroughput                :
-        SourceAggregate                      : aggr1
-        SourceNode                           : tesla-01
-        StartTimestamp                       : 1341928161
-        State                                : healthy
-        Volume                               : vol1
-        Vserver                              : joule
  
     #>
     [CmdletBinding( DefaultParameterSetName = "Set 1" )]

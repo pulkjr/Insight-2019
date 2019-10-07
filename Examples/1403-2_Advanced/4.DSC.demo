@@ -1,4 +1,4 @@
-$global:ProgressPreference = 'SilentlyContinue'
+~~$global:ProgressPreference = 'SilentlyContinue'
 Clear-Host
 ###################################################################################
 # Welcome to a demo on the NetAppCifsShare resource within the dscONTAP module

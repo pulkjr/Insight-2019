@@ -1,7 +1,8 @@
 ~$global:ProgressPreference = 'SilentlyContinue'
+~if( -not ( Get-Module dataONTAP ) ){ Import-Module dataONTAP }
 ~$cred = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
 ~Connect-NcController -Name Cluster96 -Credential $cred | Out-Null
-~if(Get-Module Insight){Remove-Module Insight}
+~if( Get-Module Insight ){ Remove-Module Insight }
 ~Clear-Host
 ###################################################################################
 # Welcome to NetApp Insight Session 1403-2
@@ -18,11 +19,31 @@ Get-NcAggrSpace
 # You can see the formats available using the following command
 Get-FormatData -TypeName DataONTAP.C.Types.Aggr.SpaceInformation
 #
-# The Format.ps1xml is used to determin how the output is displayed. The last loaded format wins.
-code "$DemoRoot/../TypeData/Insight.Format.ps1xml"
+# At this point I have a couple different options. I can user Format-Table to clean this up
+Get-NcAggrSpace | Format-Table Aggregate, VolumeFootprints, AggregateMetadata, AggregateSize, PhysicalUsed
+#
+# The problem is that Format-Table results in a [FormatEndData] output type
+( Get-NcAggrSpace | Format-Table Aggregate, VolumeFootprints, AggregateMetadata, AggregateSize, PhysicalUsed )[-1].GetType().FullName
+#
+# Why not Select-Object? you may ask
+Get-NcAggrSpace | Select-Object  Aggregate, VolumeFootprints, AggregateMetadata, AggregateSize, PhysicalUsed
+#
+# Not very pretty but it does allow us to clean up the data
+Get-NcAggrSpace | Select-Object  Aggregate, @{ N='VolumeFootprints';E={ ConvertTo-FormattedNumber -Value $_.VolumeFootprints -Type DataSize -NumberFormatString '0.00' } }
+#
+# So what happens to the underlying object?
+( Get-NcAggrSpace | Select-Object  Aggregate, VolumeFootprints, AggregateMetadata, AggregateSize, PhysicalUsed )[-1].GetType().FullName
+#
+# Not what we wanted but is good to remember, we may beable to use this to our advantage later.
+#
+# A Format.ps1xml can be used to determin how the output is displayed. 
+#
+# # NOTE: When multiple formats are loaded for the same class the most recently loaded wins
+#
+code "$DemoRoot/../../Source/Insight.Format.ps1xml"
 #
 # Import the module to load the format
-Import-Module "$DemoRoot/../Source/Insight.psd1"
+Import-Module "$DemoRoot/../../Source/Insight.psd1"
 #
 # When we rerun this command we see a nicely formatted output.
 Get-NcAggrSpace
@@ -36,4 +57,17 @@ Get-FormatData -TypeName DataONTAP.C.Types.Aggr.SpaceInformation
 #
 # You can use Format-Table to change the displayed output
 Get-NcAggrSpace | Format-Table -View Space
+( Get-NcAggrSpace | Format-Table -View Space )[-1].GetType().FullName
 Get-NcAggrSpace | Format-Table -View SpacePercent
+#
+# If this view is one that you want to run all the time you can also retype the objects
+#
+code "$DemoRoot/../../Source/Get-NcAggrSpaceInfo.ps1"
+#
+Get-NcAggrSpaceInfo
+#
+( Get-NcAggrSpaceInfo )[-1].GetType().FullName
+#
+( Get-NcAggrSpaceInfo | Get-Member )[-1].typename
+#
+~Remove-Module Insight

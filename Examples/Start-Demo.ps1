@@ -78,6 +78,9 @@ function Start-Demo
         $PromptColor = "Yellow",
 
         [System.ConsoleColor]
+        $HelpColor = "DarkGray",
+
+        [System.ConsoleColor]
         $CommandColor = "White",
 
         [System.ConsoleColor]
@@ -181,17 +184,17 @@ function Start-Demo
 
     if ( -not $SkipAddDemoTime.IsPresent )
     {
-        Write-Host -NoNewline -BackgroundColor $backgroundColor -ForegroundColor $promptColor @"
+        Write-Host -NoNewline -BackgroundColor $backgroundColor -ForegroundColor $HelpColor @"
 <Demo Started :: $( Split-Path $file -leaf )>$( ' ' * ( $hostWidth - ( 18 + $( Split-Path $file -leaf ).Length ) ) )
 "@
     }
 
     if ( -not ( $SkipInstructions.IsPresent -or $FullAuto.IsPresent ) )
     {
-        Write-Host -NoNewline -BackgroundColor $backgroundColor -ForegroundColor $promptColor "Press"
+        Write-Host -NoNewline -BackgroundColor $backgroundColor -ForegroundColor $HelpColor "Press"
         Write-Host -NoNewline -BackgroundColor $backgroundColor -ForegroundColor Red " ? "
-        Write-Host -NoNewline -BackgroundColor $backgroundColor -ForegroundColor $promptColor "for help.$( ' ' * ( $hostWidth - 17 ) )"
-        Write-Host -NoNewline -BackgroundColor $backgroundColor -ForegroundColor $promptColor $( " " * $hostWidth )
+        Write-Host -NoNewline -BackgroundColor $backgroundColor -ForegroundColor $HelpColor "for help.$( ' ' * ( $hostWidth - 17 ) )"
+        Write-Host -NoNewline -BackgroundColor $backgroundColor -ForegroundColor $HelpColor $( " " * $hostWidth )
     }
 
     # We use a FOR and an INDEX ( $_i ) instead of a FOREACH because
@@ -250,7 +253,7 @@ function Start-Demo
         {
             "?"
             {
-                Write-Host -ForegroundColor $promptColor @"
+                Write-Host -ForegroundColor $HelpColor @"
 
 Running demo: $file
 ( n ) Next       ( p ) Previous
@@ -266,12 +269,12 @@ Running demo: $file
             "n"
             {
                 # Next ( do nothing )
-                Write-Host -ForegroundColor $promptColor "<Skipping Line>"
+                Write-Host -ForegroundColor $HelpColor "<Skipping Line>"
             }
             "p"
             {
                 # Previous
-                Write-Host -ForegroundColor $promptColor "<Back one Line>"
+                Write-Host -ForegroundColor $HelpColor "<Back one Line>"
                 
                 while ( $_lines[--$_i].Trim().StartsWith( "#" ) ) { }
 
@@ -283,14 +286,14 @@ Running demo: $file
                 $AutoSpeed = [int]( Read-Host "Pause ( seconds )" )
                 $FullAutoInt = $true
 
-                Write-Host -ForegroundColor $promptColor "<eXecute Remaining Lines>"
+                Write-Host -ForegroundColor $HelpColor "<eXecute Remaining Lines>"
 
                 $_i-- # Repeat this line, and then just blow through the rest
             }
             "q"
             {
                 # Quit
-                Write-Host -ForegroundColor $promptColor "<Quiting demo>"
+                Write-Host -ForegroundColor $HelpColor "<Quiting demo>"
                 $_i = $_lines.Count
                 
                 #Restore original PowerShell host title
@@ -318,7 +321,7 @@ Running demo: $file
                 # Time Check
                 $dur = [DateTime]::Now - $_StartTime
 
-                Write-Host -ForegroundColor $promptColor $(
+                Write-Host -ForegroundColor $HelpColor $(
                     "{3} -- $( if ( $dur.Hours -gt 0 ) { '{0}h ' } )$( if ( $dur.Minutes -gt 0 ) { '{1}m ' } ){2}s" -f
                         $dur.Hours, $dur.Minutes, $dur.Seconds, ( [DateTime]::Now.ToShortTimeString() )
                 )
@@ -328,7 +331,7 @@ Running demo: $file
             "s"
             {
                 # Suspend ( Enter Nested Prompt )
-                Write-Host -ForegroundColor $promptColor "<Suspending demo - type 'Exit' to resume>"
+                Write-Host -ForegroundColor $HelpColor "<Suspending demo - type 'Exit' to resume>"
 
                 $Host.EnterNestedPrompt()
 
@@ -433,11 +436,11 @@ Running demo: $file
 
     if ( -not $SkipAddDemoTime.IsPresent )
     {
-        Write-Host -ForegroundColor $promptColor $(
+        Write-Host -ForegroundColor $HelpColor $(
             "<Demo Complete -- $( if ( $dur.Hours -gt 0 ) { '{0}h ' } )$( if ( $dur.Minutes -gt 0 ) { '{1}m ' } ){2}s>" -f
             $dur.Hours, $dur.Minutes, $dur.Seconds, [DateTime]::Now.ToLongTimeString() )
 
-        Write-Host -ForegroundColor $promptColor $( [DateTime]::now )
+        Write-Host -ForegroundColor $HelpColor $( [DateTime]::now )
     }
 
     Write-Host

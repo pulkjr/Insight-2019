@@ -12,12 +12,13 @@
     CLRVersion           = '4.0'
     RequiredModules      = 'DataONTAP'
     TypesToProcess       = @()
-    FormatsToProcess     = @('TypeData\Insight.Format.ps1xml')
+    FormatsToProcess     = @('Insight.Format.ps1xml')
     RootModule           = 'Insight.psm1'
     FunctionsToExport    = @(
         'Add-NcLunToVm'
         'Copy-NcIgroup'
         'Get-NcLunCanonicalName'
+        'Get-NcAggrSpaceInfo'
     )
     CmdletsToExport      = ''
     VariablesToExport    = ''
@@ -27,18 +28,15 @@
     )
     ModuleList           = @()
     FileList             = @(
-        'dscONTAP.psd1'
-        'dscONTAP.psm1'
-        'Private/insight.class.ps1'
-        'Private/Invoke-NcCommand.ps1'
-        'Public/Add-NcLunToVm.ps1'
-        'Public/Get-NcLunCanonicalName.ps1'
-        'Public/Copy-NcIgroup.ps1'
+        'Insight.psd1'
+        'Insight.psm1'
+        'Insight.Format.ps1xml'
+        'Diagnostics\NetAppQtree.tests.ps1'
     )
     PrivateData          = @{
         BuildNumber = '0'
         PSData      = @{
-            Tags                       = @('DesiredStateConfiguration', 'DSC', 'NetApp', 'NTAP')
+            Tags                       = @('DesiredStateConfiguration', 'NetApp', 'NTAP')
             ExternalModuleDependencies = @(
                 'DataONTAP'
             )

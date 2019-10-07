@@ -1,4 +1,5 @@
-$global:ProgressPreference = 'SilentlyContinue'
+~~$global:ProgressPreference = 'SilentlyContinue'
+~if( -not ( Get-Module dataONTAP ) ){ Import-Module dataONTAP }
 Clear-Host
 ###################################################################################
 # Welcome to a demo on the NetAppCifsShare resource within the dscONTAP module

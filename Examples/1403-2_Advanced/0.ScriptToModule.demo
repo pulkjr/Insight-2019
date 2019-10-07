@@ -1,8 +1,13 @@
-~$global:ProgressPreference = 'SilentlyContinue'
-~$cred = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
-~$controller = Connect-NcController -Name Cluster96 -Credential $cred -Transient
-~$global:CurrentNcController = $null
-~Clear-Host
+# Remove Progress bar
+~~$global:ProgressPreference = 'SilentlyContinue'
+~if( -not ( Get-Module dataONTAP ) ){ Import-Module dataONTAP }
+# Create a Credential Object
+~~$cred = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
+# Connected to the cluster using a variable
+#~~$controller = Connect-NcController -Name Cluster96 -Credential $cred -Transient
+#Ensure that the connection to the cluster is missing
+~~$global:CurrentNcController = $null
+~~Clear-Host
 ###################################################################################
 # Welcome to NetApp Insight Session 1403-2
 #
@@ -11,16 +16,26 @@
 # If you are not using functions already I highly advise you to. They provide the ability to call the command from any location no matter the directory.
 # The following piece of code is a script that collects the Volume Moves that are in progress then retypes their objects
 #
-code "$DemoRoot/../Source/Public/Copy-NcIgroup.script.ps1"
+code "$DemoRoot/Copy-NcIgroup.script.ps1"
 #
 # To execute this script we 'dot' source the script and pass the parameters to the script.
-. $DemoRoot/../Source/Scripts/Copy-NcIgroup.script.ps1 -IgroupName Example -Vserver TestSVM -NcIgroup $sourceIgroup -NewName 'CopyIgroupScript' -NewPortSetName CopyIgroupScript -NewPortSetPorts iscsi1,iscsi2
+#
+. $DemoRoot/Copy-NcIgroup.script.ps1 -IgroupName Example -Vserver TestSVM -NcIgroup $sourceIgroup -NewName 'CopyIgroupScript' -NewPortSetName CopyIgroupScript -NewPortSetPorts iscsi1,iscsi2
 #
 # The script expects a connection to the cluster already. To do this use Connect-NcController <Name>
+#
 Connect-NcController -Name Cluster96 -Credential $cred
 #
+# I now have a global variable set with the connection to the cluster
+#
+$global:CurrentNcController
+#
+Get-NcIgroup -Vserver TestSVM
+#
 # With a valid connection in memory we can run the command again and should have success.
-. $DemoRoot/../Source/Scripts/Copy-NcIgroup.script.ps1 -IgroupName Example -Vserver TestSVM -NcIgroup $sourceIgroup -NewName 'CopyIgroupScript' -NewPortSetName CopyIgroupScript -NewPortSetPorts iscsi1,iscsi2
+. $DemoRoot/Copy-NcIgroup.script.ps1 -IgroupName Example -Vserver TestSVM -NcIgroup $sourceIgroup -NewName 'CopyIgroupScript' -NewPortSetName CopyIgroupScript -NewPortSetPorts iscsi1,iscsi2
+#
+Get-NcIgroup -Vserver TestSVM
 #
 # This script is basic but it gets the job done.
 # You may want to share this script with your co-workes
@@ -30,38 +45,45 @@ Connect-NcController -Name Cluster96 -Credential $cred
 ~Clear-Host
 #
 # The Manifest describes the content of the module. Manifests are psd1 files. You can use New-ModuleManifest to create a manifest.
-code "$DemoRoot/../Source/Insight.psd1"
+code "$DemoRoot/../../Source/Insight.psd1"
 #
 # A module file or '.psm1' file is executed when the module is imported. All the code is executed. 
 # This is why we use functions. Functions, when executed, are placed into memory for invokation latter.
-code "$DemoRoot/../Source/Insight.psd1"
+code "$DemoRoot/../../Source/Insight.psm1"
 #
 # There are many different approaches to psm1 files. For the first scenario we are going to use 'dot' sourcing.
 # The module reads the manifests file list and 'dot' sources / executes the ps1 files. This places the functions
 # into the module scope for use. Now while the module is loaded the functions will be made available.
 # Just like the dataontap module you can load your new module with import-module. For this example lets use the
 # path to the psd1 file.
-Import-Module "$DemoRoot/../Source/Insight.psd1"
+#
+Import-Module "$DemoRoot/../../Source/Insight.psd1"
 #
 # You can validate the module is loaded with Get-Module.
+#
 Get-Module
 #
 # You can validate the Module has exported public functions with Get-Command
+#
 Get-Command -Module Insight
 #
 # If you look back at the module manifest you will notice that there is a property called 'FunctionsToExport'
 # Copy-NcIgroup is in that list. Let use now look at that function.
-code "$DemoRoot/../Source/Public/Copy-NcIgroup.psd1"
+code "$DemoRoot/../../Source/Public/Copy-NcIgroup.psd1"
 #
 # Notice the difference from the script. This function was made for 'user' interaction. It was made to make life easier
 # for the person executing the script. It does this by utilizing the pipeline.
 # Typically the adming will find the Igroup that matches their requirements with the Get command
+#
 Get-NcIgroup -Vserver TestSVM -Name Example
 #
 # Once they find the Igroup they want to pass that Igroup to the copy command and they want to type as little as possible.
 # NOTICE: The connection to the cluster is expected through the use of the global variable.
-Get-NcIgroup -Vserver TestSVM -Name Example | Copy-NcIgroup -Vserver TestSVM -NewName 'CopyIgroupFunction' -NewPortSetName CopyIgroupScript -NewPortSetPorts iscsi1,iscsi2 -Verbose
+#
+Get-NcIgroup -Vserver TestSVM -Name Example | Copy-NcIgroup -Vserver TestSVM -NewName 'CopyIgroupFunction' -NewPortSetName CopyIgroupFunction -NewPortSetPorts iscsi1,iscsi2 -Verbose
 #
 # The output from this command is an Igroup that can be used down the pipeline in another function.
+#
 ~Get-NcIgroup -Name CopyIgroupFunction | Remove-NcIgroup -Confirm:$false
-~Clear-Host
+~Get-NcPortset -Vserver TestSVM -Name CopyIgroupFunction | Remove-NcPortset -Confirm:$false
+~Remove-Module Insight

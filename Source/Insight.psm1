@@ -1,6 +1,7 @@
 try
 {
-    ( Test-ModuleManifest -Path "$( $MyInvocation.MyCommand.Path -replace '.psm1', '.psd1' )" -ErrorAction Ignore ).FileList | Where-Object { $_ -match '(?:Public|Private).+[.]ps1$' } | ForEach-Object { . $_ }
+    Write-Host 'Loading Insight PowerShell Module'
+    Get-ChildItem -Path $PSScriptRoot -Filter *.ps1 -Exclude *.ps1xml -Recurse | Where-Object { $_.DirectoryName -notlike '*Diagnostics' } | ForEach-Object { . $_.FullName }
 }
 catch
 {

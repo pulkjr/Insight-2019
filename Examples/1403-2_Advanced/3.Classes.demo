@@ -1,0 +1,10 @@
+~$global:ProgressPreference = 'SilentlyContinue'
+~if( -not ( Get-Module dataONTAP ) ){ Import-Module dataONTAP }
+~Clear-Host
+###################################################################################
+# Welcome to NetApp Insight Session 1403-2
+#
+# Classes Demo
+#
+code "$DemoRoot/../../Source/Private/Insight.Class.ps1"
+#

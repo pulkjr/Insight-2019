@@ -1,0 +1,57 @@
+
+# View the most common AutoSupport Settings
+Get-NcAutoSupportConfig | Format-Table -Property NodeName, Transport, IsPrivateDataRemoved, IsLocalCollectionEnabled, IsEnabled, IsSupportEnabled
+
+# Enable AutoSupport notifications to support
+Get-NcNode | Set-NcAutoSupportConfig -IsSupportEnabled $true | Format-Table -Property NodeName, Transport, IsPrivateDataRemoved, IsLocalCollectionEnabled, IsEnabled, IsSupportEnabled
+
+# View the cluster management LIF(s)
+Get-NcNetInterface -Role cluster_mgmt
+
+# Same cmdlet, but save results to variable
+$clusterNetInterface = Get-NcNetInterface -Role cluster_mgmt
+
+# Set the IP address (using $clusterNetInterface.Address)
+Set-NcNetInterface -Name cluster_mgmt -Address $clusterNetInterface.Address -Netmask 255.255.255.0 -Vserver den-cdot
+
+# View the current HomeNode/CurrentNode settings
+Get-NcNetInterface -Name cluster_mgmt | Select-Object -Property InterfaceName, HomeNode, CurrentNode
+
+# Change the HomeNode setting
+Set-NcNetInterface -Name cluster_mgmt -Vserver den-cdot -HomeNode den-cdot-02 | Select-Object -Property InterfaceName, HomeNode, CurrentNode
+
+# View the SNMP settings
+Get-NcSnmp
+
+# View the DNS settings on the admin Vserver
+Get-NcNetDns -Vserver den-cdot
+
+# Again, but save to the $netDns variable
+$netDns = Get-NcNetDns -Vserver den-cdot
+
+# Modify the DNS configuration
+Set-NcNetDns -Vserver den-cdot -NameServers $netDns.NameServers
+
+# Get the ports for a specific node (non cluster ports with an active link)
+Get-NcNetPort -Node den-cdot-01 -Role !cluster -LinkStatus up
+
+# Disable flow control for all 10GB interfaces (bug in toolkit regarding mtu-admin on 9.0+)
+Get-NcNetPort -Node den-cdot-01 | Where-Object { $_.PortType -eq 'physical' -and $_.OperationalSpeed -eq 10000 } | Set-NcNetPort -FlowControl none
+
+# Create a new interface group
+New-NcNetPortIfgrp -Node den-cdot-02 -Name a0b -DistributionFunction ip -Mode multimode_lacp
+
+# Remove the ports from the 'Default' BroadcastDomain
+Set-NcNetPortBroadcastDomain -Name Default -Ipspace Default -RemovePort den-cdot-02:e0d, den-cdot-02:e0f
+
+# Add ports to the new interface group
+Add-NcNetPortIfgrpPort -Name a0b -Node den-cdot-02 -Port e0d, e0f
+
+# Show all aggregates
+Get-NcAggr
+
+# Create a new aggregate (and enable free space reallocation)
+New-NcAggr -Node den-cdot-01 -Name n1_Insight -DiskCount 3 -RaidSize 16 -ForceSmallAggregate
+Get-NcAggrOption -Name n1_Insight
+Set-NcAggrOption -Name n1_Insight -Key free_space_realloc -Value on
+Get-NcAggrOption -Name n1_Insight | Where-Object { $_.Name -eq 'free_space_realloc' }

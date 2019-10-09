@@ -1,0 +1,60 @@
+
+# Don't do this
+add-type @'
+    using System.Net;
+    using System.Security.Cryptography.X509Certificates;
+
+    public class TrustAllCertsPolicy : ICertificatePolicy {
+        public bool CheckValidationResult(
+            ServicePoint srvPoint, X509Certificate certificate,
+            WebRequest request, int certificateProblem) {
+            return true;
+        }
+    }
+'@
+
+[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
+
+# ONTAP REST examples
+$cred = Get-Credential
+
+# Show Cluster GET
+$uri = 'https://ontap9-tme-8040.ntap2016.local/api/cluster?return_records=true&return_timeout=15'
+Invoke-RestMethod -Method Get -Uri $uri -Credential $cred
+
+# Show SVM GET
+$uri = 'https://ontap9-tme-8040.ntap2016.local/api/svm/svms?return_records=true&return_timeout=15'
+Invoke-RestMethod -Method Get -Uri $uri -Credential $cred
+
+# Lots of records returned, so let's store that in a variable
+$uri = 'https://ontap9-tme-8040.ntap2016.local/api/svm/svms?return_records=true&return_timeout=15'
+$svm = Invoke-RestMethod -Method Get -Uri $uri -Credential $cred
+
+# How many records are there?
+$svm.records.Count
+
+# Have a look at the first one
+$svm.records[0]
+
+# Wait, where are all the properties?
+# We need to use fields='*' to get everything (this can be expensive so request only what is necessary)
+$uri = 'https://ontap9-tme-8040.ntap2016.local/api/svm/svms?fields=*&return_records=true&return_timeout=15'
+$svm = Invoke-RestMethod -Method Get -Uri $uri -Credential $cred
+
+# Show the first record again
+$svm.records[0]
+
+# Find the offline volume (in this case, filtering on SVM name and vol name)
+$uri = 'https://ontap9-tme-8040.ntap2016.local/api/storage/volumes?name=test&svm.name=NFS&fields=state&return_records=true&return_timeout=15'
+$vol = (Invoke-RestMethod -Method Get -Uri $uri -Credential $cred).records
+
+# Show the volume properties
+$vol
+
+# Set the volume state to 'online' (use splatting)
+$uri = "https://ontap9-tme-8040.ntap2016.local/api/storage/volumes/$( $vol.uuid )?return_timeout=0"
+Invoke-RestMethod -Method Patch -Uri $uri -Body '{ "state": "online" }' -Credential $cred | Out-Null
+
+# Make sure it updated
+$uri = 'https://ontap9-tme-8040.ntap2016.local/api/storage/volumes?name=test&svm.name=NFS&fields=state&return_records=true&return_timeout=15'
+(Invoke-RestMethod -Method Get -Uri $uri -Credential $cred).records

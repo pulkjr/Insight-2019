@@ -1,0 +1,20 @@
+
+# Remove data volumes
+Get-NcVol -Vserver InsightSVM | ? { -not $_.VolumeStateAttributes.IsVserverRoot } | Dismount-NcVol | Set-NcVol -Offline | Remove-NcVol -Confirm:$false
+
+# Remove SVM
+Stop-NcVserver -Name InsightSVM
+Set-NcVol -Name InsightSVM_root -Vserver InsightSVM -Offline | Remove-NcVol -Confirm:$false
+Remove-NcVserver -Name InsightSVM -Confirm:$false
+
+# Remove Aggr
+Remove-NcAggr -Name n1_Insight -Confirm:$false
+Start-NcDiskZeroSpare
+
+# Set the cluster interface back where it was
+Set-NcNetInterface -Name cluster_mgmt -Vserver den-cdot -HomeNode den-cdot-01
+
+# Remove the IFGRP and add the ports back to the Default broadcast domain
+Remove-NcNetPortIfgrpPort -Name a0b -Node den-cdot-02 -Port e0d, e0f -Confirm:$false
+Remove-NcNetPortIfgrp -Name a0b -Node den-cdot-02 -Confirm:$false
+Set-NcNetPortBroadcastDomain -Name Default -Ipspace Default -AddPort den-cdot-02:e0d, den-cdot-02:e0f

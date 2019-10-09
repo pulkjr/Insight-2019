@@ -1,0 +1,15 @@
+
+# Inspect the connection object properties more closely (Vserver, TimeoutMsec and RetryCount might be useful)
+$global:CurrentNcController | fl *
+
+# Show the Get-NcVol output without using -Vserver or .Vserver
+Get-NcVol
+
+# Set the .Vserver property on the connection object
+$global:CurrentNcController.Vserver = 'InsightSVM'
+
+# Show the Get-NcVol output with that .Vserver property set
+Get-NcVol
+
+# Always set the .Vserver property back to $null when done
+$global:CurrentNcController.Vserver = $null

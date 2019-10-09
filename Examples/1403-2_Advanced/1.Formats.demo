@@ -1,7 +1,7 @@
 ~$global:ProgressPreference = 'SilentlyContinue'
 ~if( -not ( Get-Module dataONTAP ) ){ Import-Module dataONTAP }
 ~$cred = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
-~Connect-NcController -Name Cluster96 -Credential $cred | Out-Null
+~Connect-NcController -Name Cluster01 -Credential $cred | Out-Null
 ~if( Get-Module Insight ){ Remove-Module Insight }
 ~Clear-Host
 ###################################################################################
@@ -28,7 +28,7 @@ Get-NcAggrSpace | Format-Table Aggregate, VolumeFootprints, AggregateMetadata, A
 # Why not Select-Object? you may ask
 Get-NcAggrSpace | Select-Object  Aggregate, VolumeFootprints, AggregateMetadata, AggregateSize, PhysicalUsed
 #
-# Not very pretty but it does allow us to clean up the data
+# Not very pretty but it does allow us to clean up the data with Calculated Properties
 Get-NcAggrSpace | Select-Object  Aggregate, @{ N='VolumeFootprints';E={ ConvertTo-FormattedNumber -Value $_.VolumeFootprints -Type DataSize -NumberFormatString '0.00' } }
 #
 # So what happens to the underlying object?
@@ -67,6 +67,8 @@ code "$DemoRoot/../../Source/Get-NcAggrSpaceInfo.ps1"
 Get-NcAggrSpaceInfo
 #
 ( Get-NcAggrSpaceInfo )[-1].GetType().FullName
+#
+# This would also be a good way of doing formats on your custom objects
 #
 ( Get-NcAggrSpaceInfo | Get-Member )[-1].typename
 #

@@ -1,4 +1,6 @@
-<#
+function Copy-NcIgroup
+{
+    <#
     .SYNOPSIS
     This script will clone an igroup from 7g or cDOT and will facilitate the creation of an associated portset.
  
@@ -21,10 +23,8 @@
         Initiators      : {10:00:00:90:fa:1c:45:2f, 10:00:00:90:fa:1c:79:2d, 10:00:00:90:fa:1c:79:55,
                         10:00:00:90:fa:1c:79:63...}
         Vserver         : vmwareSvm 
-#>
-function Copy-NcIgroup
-{
-    [CmdletBinding( DefaultParameterSetName='NcNoPortset')]
+    #>
+    [CmdletBinding( DefaultParameterSetName = 'NcNoPortset')]
     [OutputType( [DataONTAP.C.Types.Igroup.InitiatorGroupInfo])]
     Param(
         #The object that comes from Get-NaIgroup

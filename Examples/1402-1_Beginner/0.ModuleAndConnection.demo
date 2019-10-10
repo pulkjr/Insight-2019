@@ -6,20 +6,13 @@ Import-Module DataONTAP
 # Verify that the module has been imported
 Get-Module -Name DataONTAP
 
-# Connect to the cluster 'den-cdot' (returns a 'NcController' object) - will prompt for credentials
-Connect-NcController -Name den-cdot -Credential (Get-Credential)
+# Connect to the cluster 'sim96' (returns a 'NcController' object) - will prompt for credentials
+Connect-NcController -Name sim96 -Credential (Get-Credential)
 
 # Save the credentials for future connections to this controller
 Add-NcCredential
 
-# Connect to a second cluster using the -Add parameter
-# We already have the credentials saved for this controller so don't need to pass -Credential param
-Connect-NcController -Name fse-test -Add #-Credential (Get-Credential)
-
-# View the contents of the connection array variable
-$global:CurrentNcController
-
-# Run Get-NcCluster to show results from both connected systems
+# Run Get-NcCluster
 Get-NcCluster
 
 # Clear out the global connection variable
@@ -27,7 +20,7 @@ $global:CurrentNcController = $null
 
 # You can also assign the connection object to a variable instead (useful for scripts).
 # The -Transient parameter prevents the controller object from being added to the $global:CurrentNcController variable
-$cluster = Connect-NcController -Name den-cdot -Transient #-Credential (Get-Credential)
+$cluster = Connect-NcController -Name sim96 -Transient #-Credential (Get-Credential)
 
 # Show the contents of the $cluster variable
 $cluster

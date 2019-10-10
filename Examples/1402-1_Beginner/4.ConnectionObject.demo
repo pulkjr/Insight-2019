@@ -5,10 +5,13 @@ $global:CurrentNcController | fl *
 # Show the Get-NcVol output without using -Vserver or .Vserver
 Get-NcVol
 
+# Show the Get-NcVol when passing the -VserverContext
+Get-NcVol -VserverContext InsightSVM
+
 # Set the .Vserver property on the connection object
 $global:CurrentNcController.Vserver = 'InsightSVM'
 
-# Show the Get-NcVol output with that .Vserver property set
+# Show the Get-NcVol output with that .Vserver property set (and without passing -VserverContext)
 Get-NcVol
 
 # Always set the .Vserver property back to $null when done

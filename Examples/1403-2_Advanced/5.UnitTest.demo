@@ -1,0 +1,1 @@
+Invoke-Pester -Path "$DemoRoot/../..\Tests\Public\Copy-NcIgroup.test.ps1" -CodeCoverage "$DemoRoot/../..\Source\Public\Copy-NcIgroup.ps1"

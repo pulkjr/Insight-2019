@@ -8,3 +8,19 @@
 #
 code "$DemoRoot/../../Source/Private/Insight.Class.ps1"
 #
+# We know the class is in the module so lets import it first
+Import-Module Insight
+#
+# Now lets try using it
+$insight = [InsightBase]::new()
+#
+# The class has not been exported to this scope. It is in the module scope. 
+# We can access it from within the Module scope.
+$insight = ( Get-Module Insight ).Invoke( { [InsightBase]::new() } )
+#
+$insight
+$insight.ConvertAsciiToHex('ABCD')
+#
+# Now if we want everyone to access this class you can force load the module
+Import-Module Insight -Force
+$insight = [InsightBase]::new()

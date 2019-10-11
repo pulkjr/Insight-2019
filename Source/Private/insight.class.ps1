@@ -1,8 +1,10 @@
 class InsightBase
 {
+    [string] $Name
+
     InsightBase () { }
 
-    static [string] GetPSAsciiToHex ( [string]$asciiValue )
+    static [string] ConvertAsciiToHex ( [string]$asciiValue )
     {
         $hexValues = @()
 

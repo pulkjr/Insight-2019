@@ -67,9 +67,12 @@ Get-Module
 #
 Get-Command -Module Insight
 #
+Get-Help -Name Copy-NcIgroup
+Get-Help -Name Copy-NcIgroup -Examples
+#
 # If you look back at the module manifest you will notice that there is a property called 'FunctionsToExport'
 # Copy-NcIgroup is in that list. Let use now look at that function.
-code "$DemoRoot/../../Source/Public/Copy-NcIgroup.psd1"
+code "$DemoRoot/../../Source/Public/Copy-NcIgroup.ps1"
 #
 # Notice the difference from the script. This function was made for 'user' interaction. It was made to make life easier
 # for the person executing the script. It does this by utilizing the pipeline.
@@ -80,7 +83,7 @@ Get-NcIgroup -Vserver TestSVM -Name Example
 # Once they find the Igroup they want to pass that Igroup to the copy command and they want to type as little as possible.
 # NOTICE: The connection to the cluster is expected through the use of the global variable.
 #
-Get-NcIgroup -Vserver TestSVM -Name Example | Copy-NcIgroup -Vserver TestSVM -NewName 'CopyIgroupFunction' -NewPortSetName CopyIgroupFunction -NewPortSetPorts iscsi1,iscsi2 -Verbose
+Get-NcIgroup -Vserver TestSVM -Name Example | Copy-NcIgroup -Vserver TestSVM -NewName CopyIgroupFunction -NewPortSetName CopyIgroupFunction -NewPortSetPorts iscsi1,iscsi2 -Verbose
 #
 # The output from this command is an Igroup that can be used down the pipeline in another function.
 #

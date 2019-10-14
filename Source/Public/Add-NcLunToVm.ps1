@@ -1,4 +1,6 @@
-﻿<#
+﻿function Add-NcLunToVm
+{
+    <#
     .SYNOPSIS
     This Command is used to add a Raw Device Mapping to a Virtual Machine
  
@@ -10,8 +12,6 @@
 
     This command will query the vserver for any luns beginning with ma02v and will then add them to the virtual machine.
     #>
-function Add-NcLunToVm
-{
     [CmdletBinding( DefaultParameterSetName = 'Set 1' )]
     [OutputType( [psobject], ParameterSetName = 'Set 1' )]
     Param(

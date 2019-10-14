@@ -130,7 +130,7 @@ function Start-Demo
     }
 
     # More about constructing prompts here: https://technet.microsoft.com/en-us/library/hh847739.aspx
-    Function prompt { "[PS] >" }
+    Function prompt { "PS >" }
 
     # A function for reading in a character
     function Read-Char()
@@ -225,12 +225,12 @@ function Start-Demo
         { 
             if ( -not $_lines[$_i].Trim().StartsWith( "~~" ) )
             {
-                Write-Host -NoNewline -ForegroundColor $commandColor "$( [char]0x2265 ) $( $_lines[$_i] -replace '^[~]+' )  "
+                Write-Host -NoNewline -ForegroundColor $commandColor "PS > $( $_lines[$_i] -replace '^[~]+' )  "
             }
         }
         else
         {
-            Write-Host -NoNewline -ForegroundColor $commandColor "$( [char]0x2265 ) $( $_Lines[$_i] )  "
+            Write-Host -NoNewline -ForegroundColor $commandColor "PS > $( $_Lines[$_i] )  "
         }
 
         if ( $FullAuto.IsPresent )

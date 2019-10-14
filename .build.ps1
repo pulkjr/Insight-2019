@@ -71,6 +71,10 @@ task Stage InstallDependencies, Clean, ModuleVersion, {
     {
         [void]( New-Item -Path "$moduleOutputPath\Diagnostics" -ItemType Directory -Force )
     }
+    if ( -not ( Test-Path -Path "$moduleOutputPath\Diagnostics\Simple" ) )
+    {
+        [void]( New-Item -Path "$moduleOutputPath\Diagnostics\Simple" -ItemType Directory -Force )
+    }
     Write-Build Yellow 'STAGE: Copying files to stage location'
 
     if ( -not ( Test-Path -Path "$moduleOutputPath\$script:moduleName.psm1" ) )

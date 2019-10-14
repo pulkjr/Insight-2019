@@ -1,4 +1,6 @@
-<#
+function Copy-NcIgroup
+{
+    <#
     .SYNOPSIS
     This script will clone an igroup from 7g or cDOT and will facilitate the creation of an associated portset.
  
@@ -21,10 +23,8 @@
         Initiators      : {10:00:00:90:fa:1c:45:2f, 10:00:00:90:fa:1c:79:2d, 10:00:00:90:fa:1c:79:55,
                         10:00:00:90:fa:1c:79:63...}
         Vserver         : vmwareSvm 
-#>
-function Copy-NcIgroup
-{
-    [CmdletBinding( DefaultParameterSetName='NcNoPortset')]
+    #>
+    [CmdletBinding( DefaultParameterSetName = 'NcNoPortset')]
     [OutputType( [DataONTAP.C.Types.Igroup.InitiatorGroupInfo])]
     Param(
         #The object that comes from Get-NaIgroup
@@ -42,6 +42,8 @@ function Copy-NcIgroup
         [Parameter( ParameterSetName = 'NaNewPortset', Mandatory )]
         [Parameter( ParameterSetName = 'NcNewPortset', Mandatory )]
         [Parameter( ParameterSetName = 'NcNoPortset', Mandatory )]
+        [Parameter( ParameterSetName = 'NcOldPortset', Mandatory )]
+        [Parameter( ParameterSetName = 'NaOldPortset', Mandatory )]
         [String]$NewName
         ,
         #Map the Igroup to an existing PortSet
@@ -71,11 +73,11 @@ function Copy-NcIgroup
         if ( -not $PSBoundParameters.ContainsKey( 'Controller' ) )
         {
             Write-Verbose 'Controller parameter is not present using global variable'
+
             if ( -not $global:CurrentNcController )
             {
-                throw "You must be connected to a NetApp cluster in order for this script to work."
+                throw "You must be connected to a NetApp cluster in order for this function to work. Use Connect-NcController <ClusterName> and rerun the command"
             }
-            
             [NetApp.Ontapi.Filer.C.NcController]$Controller = $global:CurrentNcController
         }
     }
@@ -142,7 +144,7 @@ function Copy-NcIgroup
                 
                 Add-NcIgroupInitiator -Name $NewName -Initiator $initiator -VserverContext $Vserver -Controller $Controller | Out-Null
             }
-            Get-NcIgroup -Name $NewName -Controller $Controller 
+            Get-NcIgroup -Name $NewName -Vserver $Vserver -Controller $Controller 
         }
         catch
         {

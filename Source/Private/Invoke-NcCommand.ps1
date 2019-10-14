@@ -1,19 +1,19 @@
-<#
-.SYNOPSIS
-    A command for handling the invocation of NetApp Commands with a retry in case the command fails due to a connection error.
-
-.DESCRIPTION
-    A command for handling the invocation of NetApp Commands with a retry in case the command fails due to a connection error.
-
-.Example
-    PS > Invoke-NcCommand -Script { Get-NcVol -Controller $connection }
-
-    Name                      State       TotalSize  Used  Available Dedupe Aggregate                 Vserver
-    ----                      -----       ---------  ----  --------- ------ ---------                 -------
-    VolCreationTest           online        10.0 GB    0%    10.0 GB  True  aggr0                     CifsSvm01
-#>
 function Invoke-NcCommand
 {
+    <#
+    .SYNOPSIS
+        A command for handling the invocation of NetApp Commands with a retry in case the command fails due to a connection error.
+
+    .DESCRIPTION
+        A command for handling the invocation of NetApp Commands with a retry in case the command fails due to a connection error.
+
+    .Example
+        PS > Invoke-NcCommand -Script { Get-NcVol -Controller $connection }
+
+        Name                      State       TotalSize  Used  Available Dedupe Aggregate                 Vserver
+        ----                      -----       ---------  ----  --------- ------ ---------                 -------
+        VolCreationTest           online        10.0 GB    0%    10.0 GB  True  aggr0                     CifsSvm01
+    #>
     [CmdletBinding()]
     [OutputType( [object[]] )]
     param(

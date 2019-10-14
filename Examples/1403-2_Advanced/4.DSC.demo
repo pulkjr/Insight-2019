@@ -1,29 +1,41 @@
 ~~$global:ProgressPreference = 'SilentlyContinue'
-~if( -not ( Get-Module dataONTAP ) ){ Import-Module dataONTAP }
+~if( Get-Module Insight ){ Remove-Module Insight }
+~if( Get-Module dataONTAP ){ Remove-Module dataONTAP }
+Clear-Host
+###############################  WARNING  #########################################
+# Start a new PowerShell Session before loadining this demo.
+Start-Process PowerShell
 Clear-Host
 ###################################################################################
-# Welcome to a demo on the NetAppCifsShare resource within the dscONTAP module
+# Welcome to a demo on the NetAppCifsShare resource within the Insight module
 #
 # This resource is used for the lifecycle management of NetApp ONTAP CIFS Shares.
 # This means you can create, modify, and delete a CIFS share via configuration data.
 #
-# To get started you must first install the module.
+# The module manifest is what exports the resource
+code "$DemoRoot/../../Source/Insight.psd1"
 #
-# To do this first copy the dscONTAP module contents to:
-#           C:\Program Files\WindowsPowerShell\Modules\dscONTAP
+# The module must be in the C:\Program Files\WindowsPowerShell Directory
+Get-ChildItem 'C:\Program Files\WindowsPowerShell\Modules\Insight'
 #
-# You will notice this has already been done for you:
-Get-ChildItem 'C:\Program Files\WindowsPowerShell\Modules\dscONTAP'
+# The NetAppCifsShare resource is held within the Insight Module.
+# The module does not need to be in memory for the resource to be available.
+Get-Module
 #
-# Before the Module can be used you must first import the
-# dataONTAP toolkit into memory as this is a required module.
+# Use Get-DscResource to see the resources available to the authoring machine.
+Get-DscResource -Module Insight
+#
+# Notice the resource is not found. This is because the dataontap module is not loaded.
+# This is because there are Types that must be in memory before the class can load.
+#
 Import-Module dataONTAP
 #
 # You can now look at the resources within the module
-Get-DscResource -Module dscONTAP
+
+Get-DscResource -Module Insight
 #
 # You should now be able to look at the syntax of the NetAppCifsShare resource
-Get-DscResource -Name NetAppCifsShare -Module dscONTAP -Syntax
+Get-DscResource -Name NetAppCifsShare -Module Insight -Syntax
 #
 # With this syntax you can add it to an existing DSC Configuration
 # or call it directly from Invoke-DscResource.
@@ -31,14 +43,14 @@ Get-DscResource -Name NetAppCifsShare -Module dscONTAP -Syntax
 ###################################################################################
 #               Calling directly with Invoke-DscResource
 # Create a variable with the credentials to connect to the NetApp Cluster
-$Credentials = Get-Credential
+$Credentials = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
 #
 # You then need a hash table with all of the configurations
 $NetAppCifsShareConfig = @{
-    Name                   = 'NetAppCifsShare_GherkinTest$'
+    Name                   = 'NetAppCifsShareTest$'
     Path                   = '/'
     Vserver                = 'TestSVM'
-    Controller             = '172.16.32.10'
+    Controller             = 'Cluster96'
     Credential             = $Credentials
     Ensure                 = 'Present'
     ShareProperties        = @( 'oplocks', 'browsable', 'showsnapshot', 'changenotify' )
@@ -46,7 +58,7 @@ $NetAppCifsShareConfig = @{
     Comment                = 'Created for Start-Demo'
     OfflineFilesMode       = 'documents'
     MaxConnectionsPerShare = 24
-}
+} #LAST LINE
 #
 # You can display the contents of the hashtable by executing the variable name
 $NetAppCifsShareConfig
@@ -57,38 +69,79 @@ $NetAppCifsShareConfig
 #   - Set()
 #   - Test()
 # The get method pulls the current configuration of the resource and returns it
-Invoke-DscResource -Name NetAppCifsShare -Method Get -ModuleName dscONTAP -Property $NetAppCifsShareConfig
+Invoke-DscResource -Name NetAppCifsShare -Method Get -ModuleName Insight -Property $NetAppCifsShareConfig
 #
 # The set method makes changes to the CIFS Share using configuration as the source of truth
-Invoke-DscResource -Name NetAppCifsShare -Method Set -ModuleName dscONTAP -Property $NetAppCifsShareConfig
+Invoke-DscResource -Name NetAppCifsShare -Method Set -ModuleName Insight -Property $NetAppCifsShareConfig
 #
 # The test method validates each property of the CIFS Share
 # against the provided configuration hashtable
-Invoke-DscResource -Name NetAppCifsShare -Method Test -ModuleName dscONTAP -Property $NetAppCifsShareConfig
+Invoke-DscResource -Name NetAppCifsShare -Method Test -ModuleName Insight -Property $NetAppCifsShareConfig
 #
 # You can run the get method again to validate the configuration manually.
-Invoke-DscResource -Name NetAppCifsShare -Method Get -ModuleName dscONTAP -Property $NetAppCifsShareConfig
+Invoke-DscResource -Name NetAppCifsShare -Method Get -ModuleName Insight -Property $NetAppCifsShareConfig
 #
 # You can also validate from the cli:
-#        vserver cifs share show -vserver TestSVM -share-name NetAppCifsShare_GherkinTest$
+#        vserver cifs share show -vserver TestSVM -share-name NetAppCifsShareTest$
+# Or with PowerShell
+#
+Get-NcCifsShare -Name 'NetAppCifsShareTest$' -VserverContext TestSVM
+# Notice the class is establishing the connection to the cluster and not relying on my session
+#
+Connect-NcController cluster96
+Get-NcCifsShare -Name 'NetAppCifsShareTest$' -VserverContext TestSVM | Format-Table -AutoSize
 #
 # Because this is configuration we can make changes to it at any point and rerun the set method
 $NetAppCifsShareConfig['Ensure'] = 'Absent'
 #
-Invoke-DscResource -Name NetAppCifsShare -Method Set -ModuleName dscONTAP -Property $NetAppCifsShareConfig
+Invoke-DscResource -Name NetAppCifsShare -Method Set -ModuleName Insight -Property $NetAppCifsShareConfig
 #
 # You can run the get method again to validate the configuration manually.
-Invoke-DscResource -Name NetAppCifsShare -Method Get -ModuleName dscONTAP -Property $NetAppCifsShareConfig
+Invoke-DscResource -Name NetAppCifsShare -Method Get -ModuleName Insight -Property $NetAppCifsShareConfig
 #
 # As a final step we can run the test method again to validate we are still within
 # the desired configuration.
-Invoke-DscResource -Name NetAppCifsShare -Method Test -ModuleName dscONTAP -Property $NetAppCifsShareConfig
+Invoke-DscResource -Name NetAppCifsShare -Method Test -ModuleName Insight -Property $NetAppCifsShareConfig
 #
 Clear-Host
 ###################################################################################
+#                      Configuration Authoring
+#
+# Now that we understand how a DSC configuration could be created and how it would
+# Interact with the NetApp Cluster. We can author a configuration then generate the
+# MOF on the underlying system.
+#
+# Again we use Get-DscConfiguration to show us the syntax
+#
+Get-DscResource -Name NetAppCifsShare -Module Insight -Syntax
+#
+code "$DemoRoot/CifsShare.Configuration.ps1"
+#
+# We first load the configuration (function) into memory
+. "$DemoRoot/CifsShare.Configuration.ps1"
+#
+# We can then pass in details to the 'configuration' using the ConfigurationData builtin parameter.
+$configData = @{
+    AllNodes = @(
+        @{
+            NodeName                    = 'localhost'
+            PsDscAllowPlainTextPassword = $true
+            Credential                  = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
+        }
+    )
+} #LAST LINE
+#
+Set-Location -Path "$DemoRoot\..\..\artifacts"
+NetAppCifsShareTest -ConfigurationData $configData
+Get-ChildItem
+Get-ChildItem NetAppCifsShareTest
+Set-Location -Path $DemoRoot
+Clear-Host
+#
+###################################################################################
 #                      Behavior Driven Development
 #
-# In the spirit of Behavior Driven Development all new dscONTAP features will come with a
+# In the spirit of Behavior Driven Development all new features added to the module should come with
 # Gherkin test for the specific scenarios within the feature
 Get-Content "$DemoRoot\..\..\Specs\NetAppCifsShare.feature"
 #

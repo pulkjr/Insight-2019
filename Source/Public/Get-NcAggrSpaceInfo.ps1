@@ -1,4 +1,6 @@
-﻿<#
+﻿function Get-NcAggrSpaceInfo
+{
+    <#
     .SYNOPSIS
     Get aggregate space information
  
@@ -9,8 +11,6 @@
     C:\PS>Get-NcAggrSpaceInfo
  
     #>
-function Get-NcAggrSpaceInfo
-{
     [CmdletBinding( )]
     [OutputType( [psobject])]
     Param(

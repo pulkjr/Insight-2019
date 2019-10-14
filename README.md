@@ -1,6 +1,9 @@
 # Insight-2019
-Session 1403-2 - Advanced PowerShell Techniques
-Session 1402-1 - Administer Your NetApp Storage Environment Using PowerShell Essentials
+Session 1403-2: Advanced PowerShell Techniques
+Session 1402-1: Administer Your NetApp Storage Environment Using PowerShell Essentials
+
+# Related Sessions
+Session 2018-2: Harnessing the Power of ONTAP Infrastructure Testing with Pester
 
 ## Who this is for:
 * You have some experience with PowerShell and are looking to write more mature scripts, functions, classes, and modules
@@ -16,15 +19,17 @@ Session 1402-1 - Administer Your NetApp Storage Environment Using PowerShell Ess
 * Advanced PowerShell Storage Provisioning Lifecycle ( Insight 2018 - Session 11923 )
 
 ## TODO
-- [ ] Converting a script to a module
-    - [ ] Script to Function
-    - [ ] Module Manifest 
-* Script - compare LUNs to VMware canonical names using subfunctions
-    * Unit Test it
-* Classes - What they are and where to use them
-    * Show subfunctions vs classes
-    Unit Test It
-* Quick Overview of DSC and its uses 
-    * comparison to ansible
-* Invoke-RestMethod who to
-* Automation vs Interactive Scripts
+- [X] Converting a script to a module
+    - [X] Script to Function
+    - [X] Module Manifest 
+- [ ] Script - compare LUNs to VMware canonical names using subfunctions
+    - [ ] Unit Test it
+- [X] Classes - What they are and where to use them
+    - [X] Show subfunctions vs classes
+    - [ ] Unit Test It
+- [X] Quick Overview of DSC and its uses 
+    - [ ] Comparison to an ansible playbook
+    - [X] Gherkin Testing
+    - [X] Diagnostic Testing
+- [X] Invoke-RestMethod for ONTAP 9.6 and beyond
+- [X] Automation vs Interactive Scripts (In PowerPoint)

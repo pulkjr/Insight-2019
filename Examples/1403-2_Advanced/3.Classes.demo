@@ -1,5 +1,6 @@
 ~$global:ProgressPreference = 'SilentlyContinue'
 ~if( -not ( Get-Module dataONTAP ) ){ Import-Module dataONTAP }
+~Connect-NcController -Name Cluster96 -Credential $cred | Out-Null
 ~Clear-Host
 ###################################################################################
 # Welcome to NetApp Insight Session 1403-2
@@ -18,9 +19,20 @@ $insight = [InsightBase]::new()
 # We can access it from within the Module scope.
 $insight = ( Get-Module Insight ).Invoke( { [InsightBase]::new() } )
 #
-$insight
-$insight.ConvertAsciiToHex('ABCD')
+# The variable now contains the object and all methods associated.
+$insight.GetVolume('TestSVM_lun')
 #
-# Now if we want everyone to access this class you can force load the module
-Import-Module Insight -Force
-$insight = [InsightBase]::new()
+# In the module you can also access the static modules directly
+( Get-Module Insight ).Invoke( { [InsightBase]::ConvertAsciiToHex('ABCD') } )
+#
+# Now if we want to access this class outside of the module we need to specify a using statement
+using module Insight
+#
+# We can now directly access the class and it's static methods
+[InsightBase]::ConvertAsciiToHex( "ABCD" )
+#
+$insight2 = [InsightBase]::new()
+#
+$insight2.name = "Advanced PowerShell"
+#
+$insight2

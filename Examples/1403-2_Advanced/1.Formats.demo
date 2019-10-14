@@ -1,7 +1,7 @@
 ~$global:ProgressPreference = 'SilentlyContinue'
 ~if( -not ( Get-Module dataONTAP ) ){ Import-Module dataONTAP }
 ~$cred = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
-~Connect-NcController -Name Cluster01 -Credential $cred | Out-Null
+~Connect-NcController -Name Cluster96 -Credential $cred | Out-Null
 ~if( Get-Module Insight ){ Remove-Module Insight }
 ~Clear-Host
 ###################################################################################

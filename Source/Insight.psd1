@@ -24,14 +24,14 @@
     VariablesToExport    = ''
     AliasesToExport      = ''
     DscResourcesToExport = @(
-        'NetAppQtree'
+        'NetAppCifsShare'
     )
     ModuleList           = @()
     FileList             = @(
         'Insight.psd1'
         'Insight.psm1'
         'Insight.Format.ps1xml'
-        'Diagnostics\NetAppQtree.tests.ps1'
+        'Diagnostics\Simple\NetAppCifsShare.tests.ps1'
     )
     PrivateData          = @{
         BuildNumber = '0'

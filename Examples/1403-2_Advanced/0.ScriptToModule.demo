@@ -72,7 +72,7 @@ Get-Help -Name Copy-NcIgroup -Examples
 #
 # If you look back at the module manifest you will notice that there is a property called 'FunctionsToExport'
 # Copy-NcIgroup is in that list. Let use now look at that function.
-code "$DemoRoot/../../Source/Public/Copy-NcIgroup.psd1"
+code "$DemoRoot/../../Source/Public/Copy-NcIgroup.ps1"
 #
 # Notice the difference from the script. This function was made for 'user' interaction. It was made to make life easier
 # for the person executing the script. It does this by utilizing the pipeline.

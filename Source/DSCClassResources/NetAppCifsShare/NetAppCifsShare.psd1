@@ -1,11 +1,11 @@
 @{
     ModuleVersion        = '0.0.1'
-    GUID                 = '45db78a1-c70a-4469-806c-f2fdbfda127f'
+    GUID                 = 'd9dce1fc-e36e-4942-b9c7-4ca7286d8a36'
     Author               = 'Joseph Pulk'
     CompanyName          = 'NetApp'
     Copyright            = '(c) 2019 NetApp Corporation. All rights reserved.'
-    Description          = 'Manage the lifecycle of a qtree'
-    RootModule           = 'NetAppQtree.psm1'
-    DscResourcesToExport = 'NetAppQtree'
+    Description          = 'Manage the lifecycle of a CifsShare'
+    RootModule           = 'NetAppCifsShare.psm1'
+    DscResourcesToExport = 'NetAppCifsShare'
     RequiredModules      = 'DataONTAP'
 }

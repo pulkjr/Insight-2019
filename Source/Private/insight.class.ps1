@@ -17,4 +17,10 @@ class InsightBase
         
         return [string]::join( "", $hexValues ).ToLower();
     }
+    [DataONTAP.C.Types.Volume.VolumeAttributes] GetVolume ( [string]$Name )
+    {
+        [DataONTAP.C.Types.Volume.VolumeAttributes] $_vol = Get-NcVol -Name $Name
+        
+        return $_vol
+    }
 }

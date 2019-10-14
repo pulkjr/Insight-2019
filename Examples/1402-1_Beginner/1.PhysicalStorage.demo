@@ -1,4 +1,3 @@
-
 # View the most common AutoSupport Settings
 Get-NcAutoSupportConfig | Format-Table -Property NodeName, Transport, IsPrivateDataRemoved, IsLocalCollectionEnabled, IsEnabled, IsSupportEnabled
 
@@ -14,7 +13,7 @@ $clusterNetInterface = Get-NcNetInterface -Role cluster_mgmt
 # Set the IP address (using $clusterNetInterface.Address)
 Set-NcNetInterface -Name cluster_mgmt -Address $clusterNetInterface.Address -Netmask 255.255.255.0 -Vserver sim96
 
-# View the current HomeNode/CurrentNode settings
+# View the HomeNode/CurrentNode settings
 Get-NcNetInterface -Name cluster_mgmt | Select-Object -Property InterfaceName, HomeNode, CurrentNode
 
 # Change the HomeNode setting

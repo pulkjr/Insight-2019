@@ -1,9 +1,9 @@
 # Insight-2019
-Session 1403-2: Advanced PowerShell Techniques
-Session 1402-1: Administer Your NetApp Storage Environment Using PowerShell Essentials
+* Session 1403-2: Advanced PowerShell Techniques
+* Session 1402-1: Administer Your NetApp Storage Environment Using PowerShell Essentials
 
 # Related Sessions
-Session 2018-2: Harnessing the Power of ONTAP Infrastructure Testing with Pester
+* Session 2018-2: Harnessing the Power of ONTAP Infrastructure Testing with Pester
 
 ## Who this is for:
 * You have some experience with PowerShell and are looking to write more mature scripts, functions, classes, and modules

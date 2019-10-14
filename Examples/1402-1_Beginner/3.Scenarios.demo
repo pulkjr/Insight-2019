@@ -1,4 +1,3 @@
-
 # Creating multiple volumes using ForEach-Object
 'InsightVol1', 'InsightVol2', 'InsightVol3' | ForEach-Object {
     New-NcVol -Name $_ -VserverContext InsightSVM -JunctionPath "/$_" -Aggregate n1_Insight -SecurityStyle unix -Size 100m
@@ -29,7 +28,7 @@ Get-NcVol -Vserver InsightSVM | ? { -not $_.VolumeStateAttributes.IsVserverRoot 
 # Check the updated SIS settings
 Get-NcSis -Vserver InsightSVM
 
-# Remove snapshots older than 30 days for all volumes in the 'vs_iscsi' vserver
+# Remove snapshots older than 5 days for all volumes in the 'vs_iscsi' vserver
 # Note the -WhatIf switch -- this forces the Remove function to display the action it will take when invoked without the -WhatIf)
 Get-NcSnapshot -Vserver SVM | Where-Object { $_.Created -lt [datetime]::Now.AddDays(-5) } | Remove-NcSnapshot -WhatIf
 

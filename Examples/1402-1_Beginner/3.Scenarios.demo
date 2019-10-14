@@ -1,0 +1,42 @@
+
+# Creating multiple volumes using ForEach-Object
+'InsightVol1', 'InsightVol2', 'InsightVol3' | ForEach-Object {
+    New-NcVol -Name $_ -VserverContext InsightSVM -JunctionPath "/$_" -Aggregate n1_Insight -SecurityStyle unix -Size 100m
+}
+
+# Increase the size of all volumes over a certain PercentageSizeUsed (using a value of 0% as these are empty lab volumes)
+Get-NcVol -Vserver InsightSVM | ? { -not $_.VolumeStateAttributes.IsVserverRoot -and $_.VolumeSpaceAttributes.PercentageSizeUsed -ge 0 } |
+    Set-NcVolSize -NewSize +10%
+
+# Show Name, State, Vserver and SpaceGuarantee settings on non-SVMRoot volumes
+Get-NcVol -Vserver InsightSVM | ? { -not $_.VolumeStateAttributes.IsVserverRoot } |
+    Select Name, State, Vserver, @{ Name = 'SpaceGuarantee'; Expression={ $_.VolumeSpaceAttributes.SpaceGuarantee } }
+
+# Enable thin provisioning on data volumes not already set correctly
+Get-NcVol -Vserver InsightSVM | ? { -not $_.VolumeStateAttributes.IsVserverRoot -and $_.VolumeSpaceAttributes.SpaceGuarantee -ne 'none' } |
+    Set-NcVolOption -Key guarantee -Value none
+
+# Show those settings again after the change
+Get-NcVol -Vserver InsightSVM | ? { -not $_.VolumeStateAttributes.IsVserverRoot } |
+    Select-Object -Property Name, State, Vserver, @{ Name = 'SpaceGuarantee'; Expression={ $_.VolumeSpaceAttributes.SpaceGuarantee } }
+
+# Show volumes with dedupe enabled
+Get-NcSis -Vserver InsightSVM
+
+# Enable dedupe on non-SVMRoot volumes
+Get-NcVol -Vserver InsightSVM | ? { -not $_.VolumeStateAttributes.IsVserverRoot } | Enable-NcSis | Start-NcSis
+
+# Check the updated SIS settings
+Get-NcSis -Vserver InsightSVM
+
+# Remove snapshots older than 30 days for all volumes in the 'vs_iscsi' vserver
+# Note the -WhatIf switch -- this forces the Remove function to display the action it will take when invoked without the -WhatIf)
+Get-NcSnapshot -Vserver SVM | Where-Object { $_.Created -lt [datetime]::Now.AddDays(-5) } | Remove-NcSnapshot -WhatIf
+
+
+# PowerCLI / ONTAP ???
+# LUN to datastore mapping?
+#$dataStore = Get-DataStore
+
+# Get canonical name
+

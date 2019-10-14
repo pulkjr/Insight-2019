@@ -1,0 +1,32 @@
+function prompt { 'PS> ' }
+
+# Import the NetApp DataONTAP PowerShell module into this session
+Import-Module DataONTAP
+
+# Verify that the module has been imported
+Get-Module -Name DataONTAP
+
+# Connect to the cluster 'sim96' (returns a 'NcController' object) - will prompt for credentials
+Connect-NcController -Name sim96 -Credential (Get-Credential)
+
+# Save the credentials for future connections to this controller
+Add-NcCredential
+
+# Run Get-NcCluster
+Get-NcCluster
+
+# Clear out the global connection variable
+$global:CurrentNcController = $null
+
+# You can also assign the connection object to a variable instead (useful for scripts).
+# The -Transient parameter prevents the controller object from being added to the $global:CurrentNcController variable
+$cluster = Connect-NcController -Name sim96 -Transient #-Credential (Get-Credential)
+
+# Show the contents of the $cluster variable
+$cluster
+
+# Pass the controller object to the Get-NcCluster cmdlet
+Get-NcCluster -Controller $cluster
+
+# Reset the global connection variable to be the single cluster we just connected to
+$global:CurrentNcController = $cluster

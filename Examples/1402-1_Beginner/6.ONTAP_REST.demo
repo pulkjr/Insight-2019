@@ -1,4 +1,3 @@
-
 # Don't do this
 add-type @'
     using System.Net;

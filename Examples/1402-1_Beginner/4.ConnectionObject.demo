@@ -1,4 +1,3 @@
-
 # Inspect the connection object properties more closely (Vserver, TimeoutMsec and RetryCount might be useful)
 $global:CurrentNcController | fl *
 

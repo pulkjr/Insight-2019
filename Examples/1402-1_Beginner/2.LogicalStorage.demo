@@ -1,4 +1,3 @@
-
 # Create a new SVM
 New-NcVserver -Name InsightSVM -RootVolume InsightSVM_root -RootVolumeAggregate n1_Insight -NameServerSwitch ldap -RootVolumeSecurityStyle unix -Language en_US.UTF-8
 

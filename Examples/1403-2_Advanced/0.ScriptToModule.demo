@@ -38,8 +38,8 @@ Get-NcIgroup -Vserver TestSVM
 Get-NcIgroup -Vserver TestSVM
 #
 # This script is basic but it gets the job done.
-# You may want to share this script with your co-workes
-# A module is a greate way to do this. The module is made up of a couple different parts. Let's cleanup and look at them.
+# You may want to share this script with your co-workers
+# A module is a great way to do this. The module is made up of a couple different parts. Let's cleanup and look at them.
 ~Get-NcIgroup -Name CopyIgroupScript | Remove-NcIgroup -Confirm:$false
 ~Get-NcPortset -Name CopyIgroupScript | Remove-NcPortset -Confirm:$false
 ~Clear-Host
@@ -48,13 +48,13 @@ Get-NcIgroup -Vserver TestSVM
 code "$DemoRoot/../../Source/Insight.psd1"
 #
 # A module file or '.psm1' file is executed when the module is imported. All the code is executed. 
-# This is why we use functions. Functions, when executed, are placed into memory for invokation latter.
+# This is why we use functions. Functions, when executed, are placed into memory for invocation later.
 code "$DemoRoot/../../Source/Insight.psm1"
 #
 # There are many different approaches to psm1 files. For the first scenario we are going to use 'dot' sourcing.
-# The module reads the manifests file list and 'dot' sources / executes the ps1 files. This places the functions
+# The module reads the manifest FileList property and 'dot' sources / executes the ps1 files. This places the functions
 # into the module scope for use. Now while the module is loaded the functions will be made available.
-# Just like the dataontap module you can load your new module with import-module. For this example lets use the
+# Just like the DataONTAP module you can load your new module with import-module. For this example lets use the
 # path to the psd1 file.
 #
 Import-Module "$DemoRoot/../../Source/Insight.psd1"
@@ -63,7 +63,7 @@ Import-Module "$DemoRoot/../../Source/Insight.psd1"
 #
 Get-Module
 #
-# You can validate the Module has exported public functions with Get-Command
+# You can validate the module has exported public functions with Get-Command
 #
 Get-Command -Module Insight
 #
@@ -71,16 +71,16 @@ Get-Help -Name Copy-NcIgroup
 Get-Help -Name Copy-NcIgroup -Examples
 #
 # If you look back at the module manifest you will notice that there is a property called 'FunctionsToExport'
-# Copy-NcIgroup is in that list. Let use now look at that function.
+# Copy-NcIgroup is in that list. Let us now look at that function.
 code "$DemoRoot/../../Source/Public/Copy-NcIgroup.ps1"
 #
 # Notice the difference from the script. This function was made for 'user' interaction. It was made to make life easier
 # for the person executing the script. It does this by utilizing the pipeline.
-# Typically the adming will find the Igroup that matches their requirements with the Get command
+# Typically the admin will find the Igroup that matches their requirements with the Get command
 #
 Get-NcIgroup -Vserver TestSVM -Name Example
 #
-# Once they find the Igroup they want to pass that Igroup to the copy command and they want to type as little as possible.
+# Once they find the Igroup, they want to pass that Igroup to the copy command while typing as little as possible.
 # NOTICE: The connection to the cluster is expected through the use of the global variable.
 #
 Get-NcIgroup -Vserver TestSVM -Name Example | Copy-NcIgroup -Vserver TestSVM -NewName CopyIgroupFunction -NewPortSetName CopyIgroupFunction -NewPortSetPorts iscsi1,iscsi2 -Verbose

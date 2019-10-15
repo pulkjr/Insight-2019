@@ -1,4 +1,3 @@
-
 # Reset cluster contact/location
 Set-NcCluster -Location '' -Contact ''
 

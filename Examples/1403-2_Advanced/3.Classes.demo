@@ -1,15 +1,19 @@
 ~$global:ProgressPreference = 'SilentlyContinue'
+~~$clusterName = '172.16.32.30'
 ~if( -not ( Get-Module dataONTAP ) ){ Import-Module dataONTAP }
-~Connect-NcController -Name Cluster96 -Credential $cred | Out-Null
+~$cred = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
+~Connect-NcController -Name $ClusterName -Credential $cred | Out-Null
 ~Clear-Host
 ###################################################################################
 # Welcome to NetApp Insight Session 1403-2
 #
 # Classes Demo
 #
+# Th Classe is very basic but shows how we could use a class rather than a subfunction
 code "$DemoRoot/../../Source/Private/Insight.Class.ps1"
 #
 # We know the class is in the module so lets import it first
+Install-Module -Repository Local -Name Insight
 Import-Module Insight
 #
 # Now lets try using it

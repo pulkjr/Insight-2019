@@ -1,10 +1,9 @@
 # Remove Progress bar
 ~~$global:ProgressPreference = 'SilentlyContinue'
+~~$clusterName = '172.16.32.30'
 ~if( -not ( Get-Module dataONTAP ) ){ Import-Module dataONTAP }
 # Create a Credential Object
 ~~$cred = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
-# Connected to the cluster using a variable
-#~~$controller = Connect-NcController -Name Cluster96 -Credential $cred -Transient
 #Ensure that the connection to the cluster is missing
 ~~$global:CurrentNcController = $null
 ~~Clear-Host
@@ -24,18 +23,18 @@ code "$DemoRoot/Copy-NcIgroup.script.ps1"
 #
 # The script expects a connection to the cluster already. To do this use Connect-NcController <Name>
 #
-Connect-NcController -Name Cluster96 -Credential $cred
+Connect-NcController -Name $ClusterName -Credential $cred
 #
 # I now have a global variable set with the connection to the cluster
 #
 $global:CurrentNcController
 #
-Get-NcIgroup -Vserver TestSVM
+Get-NcIgroup -Vserver TestSVM -Name Example
 #
 # With a valid connection in memory we can run the command again and should have success.
 . $DemoRoot/Copy-NcIgroup.script.ps1 -IgroupName Example -Vserver TestSVM -NcIgroup $sourceIgroup -NewName 'CopyIgroupScript' -NewPortSetName CopyIgroupScript -NewPortSetPorts iscsi1,iscsi2
 #
-Get-NcIgroup -Vserver TestSVM
+Get-NcIgroup -Vserver TestSVM -Name CopyIgroupScript
 #
 # This script is basic but it gets the job done.
 # You may want to share this script with your co-workers

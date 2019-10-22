@@ -117,8 +117,8 @@ function Start-Demo
         [switch]
         $SkipAddDemoTime
     )
-
-    Set-Variable -Name DemoRoot -Value $File.DirectoryName -Scope Local
+    [System.IO.FileInfo]$filePath = ( Resolve-Path $File ).Path
+    Set-Variable -Name DemoRoot -Value $filePath.DirectoryName -Scope Local
     $RawUI = $Host.UI.RawUI
     $hostWidth = $RawUI.BufferSize.Width
     $hostTitle = $RawUI.WindowTitle

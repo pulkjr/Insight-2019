@@ -1,4 +1,5 @@
 ~~$global:ProgressPreference = 'SilentlyContinue'
+~~$clusterName = '172.16.32.30'
 ~if( Get-Module Insight ){ Remove-Module Insight }
 ~if( Get-Module dataONTAP ){ Remove-Module dataONTAP }
 Clear-Host
@@ -14,9 +15,6 @@ Clear-Host
 #
 # The module manifest is what exports the resource
 code "$DemoRoot/../../Source/Insight.psd1"
-#
-# The module must be in the C:\Program Files\WindowsPowerShell Directory
-Get-ChildItem 'C:\Program Files\WindowsPowerShell\Modules\Insight'
 #
 # The NetAppCifsShare resource is held within the Insight Module.
 # The module does not need to be in memory for the resource to be available.
@@ -50,7 +48,7 @@ $NetAppCifsShareConfig = @{
     Name                   = 'NetAppCifsShareTest$'
     Path                   = '/'
     Vserver                = 'TestSVM'
-    Controller             = 'Cluster96'
+    Controller             = $ClusterName
     Credential             = $Credentials
     Ensure                 = 'Present'
     ShareProperties        = @( 'oplocks', 'browsable', 'showsnapshot', 'changenotify' )
@@ -88,7 +86,7 @@ Invoke-DscResource -Name NetAppCifsShare -Method Get -ModuleName Insight -Proper
 Get-NcCifsShare -Name 'NetAppCifsShareTest$' -VserverContext TestSVM
 # Notice the class is establishing the connection to the cluster and not relying on my session
 #
-Connect-NcController cluster96
+Connect-NcController $ClusterName
 Get-NcCifsShare -Name 'NetAppCifsShareTest$' -VserverContext TestSVM | Format-Table -AutoSize
 #
 # Because this is configuration we can make changes to it at any point and rerun the set method

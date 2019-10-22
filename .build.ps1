@@ -6,6 +6,8 @@ Set-StrictMode -Version Latest
 
 #Requires -Version 5.0
 #Requires -Modules @{ ModuleName="InvokeBuild"; ModuleVersion="5.5.1" }
+#Requires -Modules @{ ModuleName="powershellget"; ModuleVersion="2.2.1" }
+#Requires -Modules @{ ModuleName="PackageManagement"; ModuleVersion="1.4.5" }
 
 Enter-Build {
     # Look for git and ensure it is present for versioning.

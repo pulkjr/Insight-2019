@@ -1,7 +1,8 @@
 ~$global:ProgressPreference = 'SilentlyContinue'
 ~if( -not ( Get-Module dataONTAP ) ){ Import-Module dataONTAP }
+~~$clusterName = '172.16.32.30'
 ~$cred = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
-~Connect-NcController -Name Cluster96 -Credential $cred | Out-Null
+~Connect-NcController -Name $ClusterName -Credential $cred | Out-Null
 ~if( Get-Module Insight ){ Remove-Module Insight }
 ~Clear-Host
 ###################################################################################
@@ -40,10 +41,10 @@ Get-NcAggrSpace | Select-Object  Aggregate, @{ N='VolumeFootprints';E={ ConvertT
 #
 # # NOTE: When multiple formats are loaded for the same class the most recently loaded wins
 #
-code "$DemoRoot/../../Source/Insight.Format.ps1xml"
+code "$DemoRoot\..\..\Source\Insight.Format.ps1xml"
 #
 # Import the module to load the format
-Import-Module "$DemoRoot/../../Source/Insight.psd1"
+Import-Module "$DemoRoot\..\..\Source\Insight.psd1"
 #
 # When we rerun this command we see a nicely formatted output.
 Get-NcAggrSpace
@@ -62,7 +63,7 @@ Get-NcAggrSpace | Format-Table -View SpacePercent
 #
 # If this view is one that you want to run all the time you can also retype the objects
 #
-code "$DemoRoot/../../Source/Get-NcAggrSpaceInfo.ps1"
+code "$DemoRoot/../../Source/Public/Get-NcAggrSpaceInfo.ps1"
 #
 Get-NcAggrSpaceInfo
 #

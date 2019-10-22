@@ -34,7 +34,7 @@ Get-PSRepository -Name local
 #
 # This repository has the module that I just built
 #
-Find-Module -Repository Local
+Find-Module -Repository Local -WarningAction SilentlyContinue
 #
 # I can now use Install-Module to load it onto my system.
 #

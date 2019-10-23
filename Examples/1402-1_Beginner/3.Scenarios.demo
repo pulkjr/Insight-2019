@@ -31,11 +31,3 @@ Get-NcSis -Vserver InsightSVM
 # Remove snapshots older than 5 days for all volumes in the 'vs_iscsi' vserver
 # Note the -WhatIf switch -- this forces the Remove function to display the action it will take when invoked without the -WhatIf)
 Get-NcSnapshot -Vserver SVM | Where-Object { $_.Created -lt [datetime]::Now.AddDays(-5) } | Remove-NcSnapshot -WhatIf
-
-
-# PowerCLI / ONTAP ???
-# LUN to datastore mapping?
-#$dataStore = Get-DataStore
-
-# Get canonical name
-

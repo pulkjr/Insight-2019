@@ -1,6 +1,3 @@
-# Reset cluster contact/location
-Set-NcCluster -Location '' -Contact ''
-
 # Disable support ASUP
 Get-NcNode | Set-NcAutoSupportConfig -IsSupportEnabled $false
 

@@ -1,10 +1,18 @@
 function prompt { 'PS> ' }
 
+Clear-Host
+
+# Check to see if the module is available
+Get-Module -Name DataONTAP -ListAvailable
+
 # Import the NetApp DataONTAP PowerShell module into this session
 Import-Module DataONTAP
 
 # Verify that the module has been imported
 Get-Module -Name DataONTAP
+
+# Show all cmdlets available in this module
+Get-Command -Module DataONTAP
 
 # Connect to the cluster 'sim96' (returns a 'NcController' object) - will prompt for credentials
 Connect-NcController -Name sim96 -Credential (Get-Credential)
@@ -30,3 +38,6 @@ Get-NcCluster -Controller $cluster
 
 # Reset the global connection variable to be the single cluster we just connected to
 $global:CurrentNcController = $cluster
+
+# Just double check that we have the single cluster connection object in the global variable
+$global:CurrentNcController

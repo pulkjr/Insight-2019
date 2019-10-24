@@ -19,8 +19,8 @@ Get-NcNetInterface -Name cluster_mgmt | Select-Object -Property InterfaceName, H
 # Change the HomeNode setting
 Set-NcNetInterface -Name cluster_mgmt -Vserver sim96 -HomeNode sim96-02 | Select-Object -Property InterfaceName, HomeNode, CurrentNode
 
-# View the SNMP settings
-Get-NcSnmp
+# Move the liF?
+
 
 # View the DNS settings on the admin Vserver
 Get-NcNetDns -Vserver sim96

@@ -18,6 +18,19 @@
 * Storage Infrastructure Testing Using PowerShell and Pester ( Insight 2018 - Session 11942 )
 * Advanced PowerShell Storage Provisioning Lifecycle ( Insight 2018 - Session 11923 )
 
+## Using the examples
+* This repo is based around the concept of demos. The expectation is the you have a NetApp Cluster created with:
+    * SVM Named: TestSVM
+    * ISCSI target Lifs: iscsi1 and iscsi2
+* Open PowerShell and navigate to the git repo
+* Load Start-Demo into memory
+* Call one of the demos!
+
+```powershell
+PS > . ./Examples/Start-Demo.ps1
+PS > Start-Demo ./Examples/1403-2_Advanced/0.ScriptToModule.demo
+```
+
 ## TODO
 - [X] Converting a script to a module
     - [X] Script to Function

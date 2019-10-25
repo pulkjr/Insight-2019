@@ -117,8 +117,8 @@ function Start-Demo
         [switch]
         $SkipAddDemoTime
     )
-    [System.IO.FileInfo]$filePath = ( Resolve-Path $File ).Path
-    Set-Variable -Name DemoRoot -Value $filePath.DirectoryName -Scope Local
+
+    Set-Variable -Name DemoRoot -Value ( [System.IO.FileInfo]( Resolve-Path $File ).Path ).DirectoryName -Scope Local
     $RawUI = $Host.UI.RawUI
     $hostWidth = $RawUI.BufferSize.Width
     $hostTitle = $RawUI.WindowTitle
@@ -169,7 +169,7 @@ function Start-Demo
         Start-Sleep -seconds $StartDelay
     }
 
-    $_lines = Get-Content $file
+    $_lines = Get-Content $File
 
     if ( -not $SkipAddTheEndLine.IsPresent )
     {
@@ -185,7 +185,7 @@ function Start-Demo
     if ( -not $SkipAddDemoTime.IsPresent )
     {
         Write-Host -NoNewline -BackgroundColor $backgroundColor -ForegroundColor $HelpColor @"
-<Demo Started :: $( Split-Path $file -leaf )>$( ' ' * ( $hostWidth - ( 18 + $( Split-Path $file -leaf ).Length ) ) )
+<Demo Started :: $( Split-Path $File -Leaf )>$( ' ' * ( $hostWidth - ( 18 + $( Split-Path $File -Leaf ).Length ) ) )
 "@
     }
 
@@ -216,13 +216,13 @@ function Start-Demo
         if ( $_lines[$_i].Trim().StartsWith( "#" ) -or $_lines[$_i].Trim().Length -le 0 )
         {
             Write-Host -ForegroundColor $commentColor "$( $_Lines[$_i] -replace '^\#' )  "
-            
+
             Start-Sleep -Seconds $DelayAfterComment
 
             continue
         }
         elseif ( $_lines[$_i].Trim().StartsWith( "~" ) )
-        { 
+        {
             if ( -not $_lines[$_i].Trim().StartsWith( "~~" ) )
             {
                 Write-Host -NoNewline -ForegroundColor $commandColor "PS > $( $_lines[$_i] -replace '^[~]+' )  "
@@ -230,7 +230,14 @@ function Start-Demo
         }
         else
         {
-            Write-Host -NoNewline -ForegroundColor $commandColor "PS > $( $_Lines[$_i] )  "
+            if ($ch -eq [char]32)
+            {
+                Write-Host -NoNewline -ForegroundColor $commandColor ">> $( $_Lines[$_i] )  "
+            }
+            else
+            {
+                Write-Host -NoNewline -ForegroundColor $commandColor "PS > $( $_Lines[$_i] )  "
+            }
         }
 
         if ( $FullAuto.IsPresent )
@@ -239,13 +246,15 @@ function Start-Demo
             Start-Sleep $autoSpeed
             $ch = [char]13
         }
-        elseif ( $_lines[$_i] -match '^[~]' )
-        { 
+        elseif ( $_lines[$_i].Trim().StartsWith('~') )
+        {
             $ch = [char]13
-            $_lines[$_i] = $_lines[$_i] -replace '^[~]+'
+            $FullAutoInt = $true
+            $_lines[$_i] = $_lines[$_i].Trim() -replace '^[~]+'
         }
         else
-        { 
+        {
+            $FullAutoInt = $false
             $ch = Read-Char
         }
 
@@ -255,10 +264,10 @@ function Start-Demo
             {
                 Write-Host -ForegroundColor $HelpColor @"
 
-Running demo: $file
+Running demo: $File
 ( n ) Next       ( p ) Previous
 ( q ) Quit       ( s ) Suspend
-( t ) Timecheck  ( v ) View $( Split-Path $file -leaf )
+( t ) Timecheck  ( v ) View $( Split-Path $File -Leaf )
 ( g ) Go to line by number
 ( f ) Find lines by string
 ( a ) Auto Execute mode
@@ -275,7 +284,7 @@ Running demo: $file
             {
                 # Previous
                 Write-Host -ForegroundColor $HelpColor "<Back one Line>"
-                
+
                 while ( $_lines[--$_i].Trim().StartsWith( "#" ) ) { }
 
                 $_i-- # back a line, we're gonna step forward when we loop
@@ -295,10 +304,10 @@ Running demo: $file
                 # Quit
                 Write-Host -ForegroundColor $HelpColor "<Quiting demo>"
                 $_i = $_lines.Count
-                
+
                 #Restore original PowerShell host title
                 $RawUI.WindowTitle = $hostTitle
-                
+
                 #Restore original PowerShell prompt
                 if ( $UseMyPrompt.IsPresent )
                 {
@@ -323,7 +332,7 @@ Running demo: $file
 
                 Write-Host -ForegroundColor $HelpColor $(
                     "{3} -- $( if ( $dur.Hours -gt 0 ) { '{0}h ' } )$( if ( $dur.Minutes -gt 0 ) { '{1}m ' } ){2}s" -f
-                        $dur.Hours, $dur.Minutes, $dur.Seconds, ( [DateTime]::Now.ToShortTimeString() )
+                    $dur.Hours, $dur.Minutes, $dur.Seconds, ( [DateTime]::Now.ToShortTimeString() )
                 )
 
                 $_i-- # back a line, we're gonna step forward when we loop
@@ -358,14 +367,14 @@ Running demo: $file
             {
                 # Find by pattern
                 $match = $_lines | Select-String ( Read-Host "search string" )
-                
+
                 if ( [String]::IsNullOrEmpty( $match ) )
                 {
                     Write-Host -ForegroundColor Red "Can't find a matching line"
                 }
                 else
                 {
-                    $match | ForEach-Object { 
+                    $match | ForEach-Object {
                         Write-Host -ForegroundColor $promptColor $( "[{0,2}] {1}" -f ( $_.LineNumber - 1 ), $_.Line )
                     }
 
@@ -379,8 +388,9 @@ Running demo: $file
                     }
                 }
             }
-            " "
+            "$( [char]32 )"
             {
+                # On spacebar
                 if ( -not $_expressionBuilder )
                 {
                     $_expressionBuilder = [System.Text.StringBuilder]::new( $_lines[$_i] )
@@ -406,7 +416,7 @@ Running demo: $file
                 Write-Host
 
                 trap [System.Exception] { Write-Error $_; continue; }
-                
+
                 if ( $_expressionBuilder )
                 {
                     [void]$_expressionBuilder.AppendLine().Append( $_lines[$_i] )
@@ -418,7 +428,7 @@ Running demo: $file
                 {
                     Invoke-Expression ( $_lines[$_i] ) | Out-Default
                 }
-                
+
                 if ( -not $NoPauseAfterExecute.IsPresent -and -not $FullAutoInt )
                 {
                     $null = $RawUI.ReadKey( "NoEcho,IncludeKeyUp" ) # Pause after output for no apparent reason... ; )
@@ -427,11 +437,12 @@ Running demo: $file
             default
             {
                 Write-Host -ForegroundColor Green "`nKey not recognized. Press ? for help, or ENTER to execute the command."
-                
+
                 $_i-- # back a line, we're gonna step forward when we loop
             }
         }
     }
+
     $dur = [DateTime]::Now - $_StartTime
 
     if ( -not $SkipAddDemoTime.IsPresent )

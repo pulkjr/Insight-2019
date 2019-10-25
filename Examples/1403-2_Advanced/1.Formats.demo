@@ -1,9 +1,9 @@
 ~$global:ProgressPreference = 'SilentlyContinue'
-~if( -not ( Get-Module dataONTAP ) ){ Import-Module dataONTAP }
+~if( -not ( Get-Module dataONTAP ) ) { Import-Module dataONTAP }
 ~~$clusterName = '172.16.32.30'
 ~$cred = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
 ~Connect-NcController -Name $ClusterName -Credential $cred | Out-Null
-~if( Get-Module Insight ){ Remove-Module Insight }
+~if( Get-Module Insight ) { Remove-Module Insight }
 ~Clear-Host
 ###################################################################################
 # Welcome to NetApp Insight Session 1403-2
@@ -30,14 +30,14 @@ Get-NcAggrSpace | Format-Table Aggregate, VolumeFootprints, AggregateMetadata, A
 Get-NcAggrSpace | Select-Object  Aggregate, VolumeFootprints, AggregateMetadata, AggregateSize, PhysicalUsed
 #
 # Not very pretty but it does allow us to clean up the data with Calculated Properties
-Get-NcAggrSpace | Select-Object  Aggregate, @{ N='VolumeFootprints';E={ ConvertTo-FormattedNumber -Value $_.VolumeFootprints -Type DataSize -NumberFormatString '0.00' } }
+Get-NcAggrSpace | Select-Object  Aggregate, @{ N = 'VolumeFootprints'; E = { ConvertTo-FormattedNumber -Value $_.VolumeFootprints -Type DataSize -NumberFormatString '0.00' } }
 #
 # So what happens to the underlying object?
 ( Get-NcAggrSpace | Select-Object  Aggregate, VolumeFootprints, AggregateMetadata, AggregateSize, PhysicalUsed )[-1].GetType().FullName
 #
 # Not what we wanted but is good to remember, we may be able to use this to our advantage later.
 #
-# A Format.ps1xml can be used to determine how the output is displayed. 
+# A Format.ps1xml can be used to determine how the output is displayed.
 #
 # # NOTE: When multiple formats are loaded for the same class the most recently loaded wins
 #

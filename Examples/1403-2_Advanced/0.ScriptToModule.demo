@@ -46,7 +46,7 @@ Get-NcIgroup -Vserver TestSVM -Name CopyIgroupScript
 # The Manifest describes the content of the module. Manifests are psd1 files. You can use New-ModuleManifest to create a manifest.
 code "$DemoRoot/../../Source/Insight.psd1"
 #
-# A module file or '.psm1' file is executed when the module is imported. All the code is executed. 
+# A module file or '.psm1' file is executed when the module is imported. All the code is executed.
 # This is why we use functions. Functions, when executed, are placed into memory for invocation later.
 code "$DemoRoot/../../Source/Insight.psm1"
 #

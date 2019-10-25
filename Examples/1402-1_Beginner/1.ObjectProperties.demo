@@ -1,0 +1,47 @@
+# Grab a volume object and look at it
+$vol = Get-NcVol -Name data_vol1 -Vserver SVM
+$vol
+
+# Are those the only properties?
+# Pipe this volume to the Get-Member cmdlet
+# Note that this object has subobjects (fairly complicated object)
+$vol | Get-Member
+
+# Why are we only seeing a few of the properties in the table?
+# Maybe there is a format view definition for this object type?
+# Let's look at the Type of the object (FullName).
+$vol.GetType().FullName
+
+# Is there a format view definition?
+Get-FormatData -TypeName $vol.GetType().FullName
+
+# How do see more properties? We can use Format-List
+$vol | Format-List
+
+# We can specify properties we want to see using Format-List or Format-Table
+$vol | Format-Table -Property Name, Vserver, TotalSize
+
+# Where do we find the SecurityStyle property?
+$vol.VolumeSecurityAttributes.Style
+
+# How can we access that using Select-Object (in addition to other properties)?
+# We can use the 'calculated properties' capability with Select-Object (or the
+# Format-List/Format-Table cmdlets)
+$vol | Select-Object -Property Name, Vserver, TotalSize, @{
+    Name       = 'SecurityStyle'
+    Expression = { $PSItem.VolumeSecurityAttributes.Style }
+}
+
+
+# What else can we do with calculated properties?
+$vol | Select-Object -Property Name, Vserver, TotalSize, @{
+    Name       = 'TotalSizeInGb'
+    Expression = { $_.TotalSize / 1gb }
+}
+
+
+# What happens to the object type when I use Select-Object?
+# Notice this is no longer the original object type, but is now a PSCustomObject.
+# This can affect the format views and also subsequent pipeline functions if they
+# are expecing a specific object type.
+($vol | Select-Object -Property Name, Vserver, TotalSize).GetType()

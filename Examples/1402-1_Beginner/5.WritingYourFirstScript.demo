@@ -1,0 +1,39 @@
+# How many parameters are possible with the New-NcVol cmdlet?
+Get-Help -Name New-NcVol
+
+# Let's look at a basic 'batch' style script. This script allows
+# us to hard code the JunctionPath which might be the first
+# step towards standardizing how volumes are created in this
+# environment (mounting vols to the root of the namespace).
+code $DemoRoot/NewNtapDataVolume.batch.ps1
+
+# Now we've turned that same 'batch' script into a function.
+# We're able to do some basic error handling and have separate
+# code paths depending on the protocol type specified (CIFS or
+# NFS). This script would be 'dot' sourced into a PowerShell
+# session.
+code $DemoRoot/NewNtapDataVolume.function.ps1
+
+# Let's walk through how the end user would run this function
+# First, import the DataONTAP module
+Import-Module -Name DataONTAP
+
+# Second, connect to a controller (assigning the controller object to a variable)
+$controller = Connect-NcController -Name sim96
+
+# Third, we 'dot' source the function into memory (this could also reside
+# in the user's profile and if so, will be available in all new PS sessions)
+. "$DemoRoot/NewNtapDataVolume.function.ps1"
+
+# Now, call the new function with the parameters (we could also use a splat
+# here instead of this big long line).
+# Notice how the volume is returned to the pipeline after it is created.
+New-NtapDataVolume -Name CifsVol1 -Aggregate n1_Insight -Size 20m -Protocol cifs -Vserver InsightSVM -Controller $controller
+
+# Let's use our calculated property example from earlier to ensure the
+# SecurityStyle property was set correctly.
+Get-NcVol -Name CifsVol1 -Vserver InsightSVM | Select-Object -Property Name, Vserver, @{
+    Name       = 'SecurityStyle'
+    Expression = { $PSItem.VolumeSecurityAttributes.Style }
+}
+

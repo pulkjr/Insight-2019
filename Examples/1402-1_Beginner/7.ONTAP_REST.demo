@@ -1,5 +1,5 @@
 # Don't do this
-add-type @'
+Add-Type -TypeDefinition @'
     using System.Net;
     using System.Security.Cryptography.X509Certificates;
 
@@ -17,11 +17,11 @@ add-type @'
 $cred = Get-Credential
 
 # Show Cluster GET
-$uri = 'https://sim96/api/cluster?return_records=true&return_timeout=15'
+$uri = 'https://sim96/api/cluster'
 Invoke-RestMethod -Method Get -Uri $uri -Credential $cred
 
 # Show SVM GET
-$uri = 'https://sim96/api/svm/svms?return_records=true&return_timeout=15'
+$uri = 'https://sim96/api/svm/svms'
 Invoke-RestMethod -Method Get -Uri $uri -Credential $cred
 
 # All records are returned, so let's store that in a variable
@@ -30,34 +30,34 @@ $svm = Invoke-RestMethod -Method Get -Uri $uri -Credential $cred
 # How many records are there?
 $svm.records.Count
 
-# Have a look at the first one
-$svm.records[0]
+# Have a look at the second svm in the array
+$svm.records[1]
 
 # Wait, where are all the properties?
 # We need to use fields='*' to get everything (this can be expensive so request only what is necessary)
-$uri = 'https://sim96/api/svm/svms?fields=*&return_records=true&return_timeout=15'
+$uri = 'https://sim96/api/svm/svms?fields=*'
 $svm = Invoke-RestMethod -Method Get -Uri $uri -Credential $cred
 
-# Show the first record again
-$svm.records[0]
+# Show the second svm again
+$svm.records[1]
 
 # Find the offline volume (in this case, filtering on SVM name and vol name)
-$uri = 'https://sim96/api/storage/volumes?name=test_offline&svm.name=SVM&fields=state&return_records=true&return_timeout=15'
+$uri = 'https://sim96/api/storage/volumes?name=test_offline&svm.name=SVM&fields=state'
 $vol = (Invoke-RestMethod -Method Get -Uri $uri -Credential $cred).records
 
 # Show the volume properties
 $vol
 
 # Set the volume state to 'online'
-$uri = "https://sim96/api/storage/volumes/$( $vol.uuid )?return_timeout=0"
+$uri = "https://sim96/api/storage/volumes/$( $vol.uuid )"
 Invoke-RestMethod -Method Patch -Uri $uri -Body '{ "state": "online" }' -Credential $cred | Out-Null
 
 # Make sure it updated
-$uri = 'https://sim96/api/storage/volumes?name=test_offline&svm.name=SVM&fields=state&return_records=true&return_timeout=15'
+$uri = 'https://sim96/api/storage/volumes?name=test_offline&svm.name=SVM&fields=state'
 (Invoke-RestMethod -Method Get -Uri $uri -Credential $cred).records
 
 # Set the volume state back to 'offline'
-$uri = "https://sim96/api/storage/volumes/$( $vol.uuid )?return_timeout=0"
+$uri = "https://sim96/api/storage/volumes/$( $vol.uuid )"
 Invoke-RestMethod -Method Patch -Uri $uri -Body '{ "state": "offline" }' -Credential $cred | Out-Null
 
 # ZAPI is still available until 3 years from the 9.6 release

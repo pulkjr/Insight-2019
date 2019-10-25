@@ -10,11 +10,13 @@ param (
 
 $params = @{ }
 
-if ($Vserver) {
+if ($Vserver)
+{
     $params.Add('Vserver', $Vserver)
 }
 
-if ($Volume) {
+if ($Volume)
+{
     $params.Add('Volume', $Volume)
 }
 

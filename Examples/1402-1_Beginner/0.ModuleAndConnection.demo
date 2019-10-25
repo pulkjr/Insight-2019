@@ -1,43 +1,58 @@
-function prompt { 'PS> ' }
-
-Clear-Host
-
-# Check to see if the module is available
+# Check to see if the module is available on this system
 Get-Module -Name DataONTAP -ListAvailable
 
 # Import the NetApp DataONTAP PowerShell module into this session
-Import-Module DataONTAP
+Import-Module -Name DataONTAP
 
 # Verify that the module has been imported
 Get-Module -Name DataONTAP
 
-# Show all cmdlets available in this module
-Get-Command -Module DataONTAP
+# Show all 'Get' cmdlets available in this module
+Get-Command -Module DataONTAP -Verb Get
 
-# Connect to the cluster 'sim96' (returns a 'NcController' object) - will prompt for credentials
+Clear-Host
+
+# Let's take a quick look at the help for the Connect-NcController cmdlet
+Get-Help Connect-NcController
+
+# Connect to the cluster 'sim96' (returns a 'NcController' object) - will prompt
+# for credentials
 Connect-NcController -Name sim96 -Credential (Get-Credential)
 
 # Save the credentials for future connections to this controller
 Add-NcCredential
 
-# Run Get-NcCluster
+# Let's look at the connection object stored in the global:CurrentNcController
+# variable
+$global:CurrentNcController
+
+# We could add more connection objects to this variable using the -Add parameter
+# on the Connect-NcController cmdlet. Any subsequent cmdlet calls will then be
+# performed on each of the connection objects contained within this variable.
+# i.e. Connect-NcController -Name cluster1 -Credential (Get-Credential) -Add
+
+# Run Get-NcCluster (this would show the cluster-identity-get output from all
+# connection objects stored in the global:CurrentNcController variable)
 Get-NcCluster
+
+# Using the Get-NcHelp cmdlet that ships with the ONTAP PowerShell Module, we
+# can see additional ONTAP-specific info about the cmdlets.
+Get-NcHelp -Cmdlet Get-NcCluster | fl
 
 # Clear out the global connection variable
 $global:CurrentNcController = $null
 
-# You can also assign the connection object to a variable instead (useful for scripts).
-# The -Transient parameter prevents the controller object from being added to the $global:CurrentNcController variable
+# You can also assign the connection object to a variable instead (useful for
+# scripts). The -Transient parameter prevents the controller object from being
+# added to the $global:CurrentNcController variable
 $cluster = Connect-NcController -Name sim96 -Transient #-Credential (Get-Credential)
 
-# Show the contents of the $cluster variable
+# Show the contents of the $cluster variable (should be the same connection
+# object we saw previously).
 $cluster
 
 # Pass the controller object to the Get-NcCluster cmdlet
 Get-NcCluster -Controller $cluster
 
-# Reset the global connection variable to be the single cluster we just connected to
-$global:CurrentNcController = $cluster
-
-# Just double check that we have the single cluster connection object in the global variable
-$global:CurrentNcController
+# Connect to the cluster again to populate the global variable for the demos
+Connect-NcController -Name sim96

@@ -6,7 +6,7 @@
 ###################################################################################
 # Welcome to NetApp Insight Session 1403-2
 #
-# InvokeBuild Demo
+# InvokeBuild - CICD Demo
 #
 # Now that we have taken a complete look at some functions and the module layout let us review a quick build process.
 # To do this I use the module InvokeBuild. InvokeBuild allows us to divide the build process into tasks and fire them

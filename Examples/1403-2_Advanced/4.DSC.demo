@@ -4,7 +4,7 @@
 ~if( Get-Module dataONTAP ) { Remove-Module dataONTAP }
 Clear-Host
 ###############################  WARNING  #########################################
-# Start a new PowerShell Session before loadining this demo.
+# Start a new PowerShell Session before loading this demo.
 Start-Process PowerShell
 Clear-Host
 ###################################################################################
@@ -44,7 +44,7 @@ Get-DscResource -Name NetAppCifsShare -Module Insight -Syntax
 $Credentials = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
 #
 # You then need a hash table with all of the configurations
-$NetAppCifsShareConfig = @{
+$NetAppCifsShareConfig = @{ 
     Name                   = 'NetAppCifsShareTest$'
     Path                   = '/'
     Vserver                = 'TestSVM'

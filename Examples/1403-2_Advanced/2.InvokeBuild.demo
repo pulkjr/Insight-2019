@@ -1,7 +1,7 @@
-~if ( Get-PSRepository -Name local -ErrorAction 'SilentlyContinue' ){ UnRegister-PSRepository -Name Local -ErrorAction 'SilentlyContinue' }
-~if( -not ( Get-Module dataONTAP ) ){ Import-Module dataONTAP }
-~if ( Get-Module Insight ){ Remove-Module Insight }
-~if ( Get-Module -Name Insight -ListAvailable ){ Uninstall-Module -Name Insight }
+~if ( Get-PSRepository -Name local -ErrorAction 'SilentlyContinue' ) { Unregister-PSRepository -Name Local -ErrorAction 'SilentlyContinue' }
+~if( -not ( Get-Module dataONTAP ) ) { Import-Module dataONTAP }
+~if ( Get-Module Insight ) { Remove-Module Insight }
+~if ( Get-Module -Name Insight -ListAvailable ) { Uninstall-Module -Name Insight }
 ~Clear-Host
 ###################################################################################
 # Welcome to NetApp Insight Session 1403-2
@@ -18,7 +18,7 @@ code "$DemoRoot/../../.build.ps1"
 # It will then update the module version based on the the change log.
 #
 # Two main folders will be created during the build process: artifacts and stage
-Get-ChildItem -Name "$DemoRoot/../.." -Directory | Sort Name
+Get-ChildItem -Name "$DemoRoot/../.." -Directory | sort Name
 #
 Get-Module -Name Insight -ListAvailable
 #
@@ -27,7 +27,7 @@ Get-Module -Name Insight -ListAvailable
 Invoke-Build
 #
 # The build has created a couple files for release of the module
-Get-ChildItem -Name "$DemoRoot/../../artifacts" | Sort Name
+Get-ChildItem -Name "$DemoRoot/../../artifacts" | sort Name
 #
 # A new 'local' repository has been created on my system
 Get-PSRepository -Name local

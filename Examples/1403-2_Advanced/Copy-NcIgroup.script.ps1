@@ -1,7 +1,7 @@
 <#
     .SYNOPSIS
     This script will clone an igroup from 7g or cDOT and will facilitate the creation of an associated portset.
- 
+
     .DESCRIPTION
     Use Get-NcIgroup or Get-NaIgroup to find the igroup that you would like to clone. This function will copy the contents of the object into a new igroup and will allow you to create a new portset for this igroup as well.
 
@@ -20,7 +20,7 @@
         VSA             : False
         Initiators      : {10:00:00:90:fa:1c:45:2f, 10:00:00:90:fa:1c:79:2d, 10:00:00:90:fa:1c:79:55,
                         10:00:00:90:fa:1c:79:63...}
-        Vserver         : vmwareSvm 
+        Vserver         : vmwareSvm
     .NOTES
     TODO : Add support for pipeline
     TODO : Add 7-Mode systems support

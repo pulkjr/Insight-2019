@@ -1,6 +1,6 @@
 ~$global:ProgressPreference = 'SilentlyContinue'
 ~~$clusterName = '172.16.32.30'
-~if( -not ( Get-Module dataONTAP ) ){ Import-Module dataONTAP }
+~if( -not ( Get-Module dataONTAP ) ) { Import-Module dataONTAP }
 ~$cred = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
 ~Connect-NcController -Name $ClusterName -Credential $cred | Out-Null
 ~Clear-Host
@@ -19,7 +19,7 @@ Import-Module Insight
 # Now lets try using it
 $insight = [InsightBase]::new()
 #
-# The class has not been exported to this scope. It is in the module scope. 
+# The class has not been exported to this scope. It is in the module scope.
 # We can access it from within the Module scope.
 $insight = ( Get-Module Insight ).Invoke( { [InsightBase]::new() } )
 #

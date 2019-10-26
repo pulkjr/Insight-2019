@@ -1,7 +1,7 @@
 # Remove Progress bar
 ~~$global:ProgressPreference = 'SilentlyContinue'
 ~~$clusterName = '172.16.32.30'
-~if( -not ( Get-Module dataONTAP ) ){ Import-Module dataONTAP }
+~if( -not ( Get-Module dataONTAP ) ) { Import-Module dataONTAP }
 # Create a Credential Object
 ~~$cred = [System.Management.Automation.PSCredential]::new( 'admin', $( ConvertTo-SecureString 'netapp123' -AsPlainText -Force ) )
 #Ensure that the connection to the cluster is missing
@@ -19,7 +19,7 @@ code "$DemoRoot/Copy-NcIgroup.script.ps1"
 #
 # To execute this script we 'dot' source the script and pass the parameters to the script.
 #
-. $DemoRoot/Copy-NcIgroup.script.ps1 -IgroupName Example -Vserver TestSVM -NcIgroup $sourceIgroup -NewName 'CopyIgroupScript' -NewPortSetName CopyIgroupScript -NewPortSetPorts iscsi1,iscsi2
+. $DemoRoot/Copy-NcIgroup.script.ps1 -IgroupName Example -Vserver TestSVM -NcIgroup $sourceIgroup -NewName 'CopyIgroupScript' -NewPortSetName CopyIgroupScript -NewPortSetPorts iscsi1, iscsi2
 #
 # The script expects a connection to the cluster already. To do this use Connect-NcController <Name>
 #
@@ -32,7 +32,7 @@ $global:CurrentNcController
 Get-NcIgroup -Vserver TestSVM -Name Example
 #
 # With a valid connection in memory we can run the command again and should have success.
-. $DemoRoot/Copy-NcIgroup.script.ps1 -IgroupName Example -Vserver TestSVM -NcIgroup $sourceIgroup -NewName 'CopyIgroupScript' -NewPortSetName CopyIgroupScript -NewPortSetPorts iscsi1,iscsi2
+. $DemoRoot/Copy-NcIgroup.script.ps1 -IgroupName Example -Vserver TestSVM -NcIgroup $sourceIgroup -NewName 'CopyIgroupScript' -NewPortSetName CopyIgroupScript -NewPortSetPorts iscsi1, iscsi2
 #
 Get-NcIgroup -Vserver TestSVM -Name CopyIgroupScript
 #
@@ -82,7 +82,7 @@ Get-NcIgroup -Vserver TestSVM -Name Example
 # Once they find the Igroup, they want to pass that Igroup to the copy command while typing as little as possible.
 # NOTICE: The connection to the cluster is expected through the use of the global variable.
 #
-Get-NcIgroup -Vserver TestSVM -Name Example | Copy-NcIgroup -Vserver TestSVM -NewName CopyIgroupFunction -NewPortSetName CopyIgroupFunction -NewPortSetPorts iscsi1,iscsi2 -Verbose
+Get-NcIgroup -Vserver TestSVM -Name Example | Copy-NcIgroup -Vserver TestSVM -NewName CopyIgroupFunction -NewPortSetName CopyIgroupFunction -NewPortSetPorts iscsi1, iscsi2 -Verbose
 #
 # The output from this command is an Igroup that can be used down the pipeline in another function.
 #

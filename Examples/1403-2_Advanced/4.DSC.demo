@@ -1,7 +1,7 @@
 ~~$global:ProgressPreference = 'SilentlyContinue'
 ~~$clusterName = '172.16.32.30'
-~if( Get-Module Insight ){ Remove-Module Insight }
-~if( Get-Module dataONTAP ){ Remove-Module dataONTAP }
+~if( Get-Module Insight ) { Remove-Module Insight }
+~if( Get-Module dataONTAP ) { Remove-Module dataONTAP }
 Clear-Host
 ###############################  WARNING  #########################################
 # Start a new PowerShell Session before loadining this demo.

@@ -1,17 +1,27 @@
-function New-NtapDataVolume {
+function New-NtapDataVolume
+{
     param ($Controller, $Name, $Vserver, $Aggregate, $Size, $Protocol)
 
-    if (-not (Get-NcVserver -Vserver $Vserver -Controller $controller)) {
+    if (-not $Controller)
+    {
+        Write-Error -Message 'No valid controller object specified'
+        return
+    }
+
+    if (-not (Get-NcVserver -Vserver $Vserver -Controller $controller))
+    {
         Write-Error -Message "Vserver not found: $Vserver"
         return
     }
 
-    if (-not (Get-NcAggr -Name $Aggregate -Controller $controller -ErrorAction Ignore)) {
+    if (-not (Get-NcAggr -Name $Aggregate -Controller $controller -ErrorAction Ignore))
+    {
         Write-Error -Message "Aggregate not found: $Aggregate"
         return
     }
 
-    if (Get-NcVol -Name $Name -Vserver $Vserver -Controller $controller) {
+    if (Get-NcVol -Name $Name -Vserver $Vserver -Controller $controller)
+    {
         Write-Error -Message "Volume exists: $Volume"
         return
     }
@@ -24,10 +34,12 @@ function New-NtapDataVolume {
         Size           = $Size
     }
 
-    switch -exact ($Protocol) {
-        'CIFS' {
+    switch -exact ($Protocol)
+    {
+        'CIFS'
+        {
             $params.Add('SecurityStyle', 'ntfs')
-            
+
             $outputVol = New-NcVol @params -Controller $Controller
 
             ## Add-NcCifsShare
@@ -35,7 +47,8 @@ function New-NtapDataVolume {
 
             $outputVol
         }
-        'NFS' {
+        'NFS'
+        {
             $params.Add('SecurityStyle', 'unix')
             $params.Add('ExportPolicy', 'ExportPol1')
 

@@ -38,6 +38,7 @@ else
 $Script:StagePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath( "$BuildRoot/stage" )
 $script:moduleName = 'Insight'
 
+# Ensure the build agent has all the module needed to run build
 task InstallDependencies {
 
     if ( -not ( Get-Module -ListAvailable pester ) )
@@ -61,6 +62,7 @@ task Clean {
     }
     [void]( New-Item -ItemType Directory -Path $Script:StagePath -Force )
 }
+# Place the content of all associated ps1 files into a single 'psm1' file
 task Stage InstallDependencies, Clean, ModuleVersion, {
 
     $moduleOutputPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath( "$Script:StagePath/$script:moduleName" )
@@ -91,7 +93,7 @@ task Stage InstallDependencies, Clean, ModuleVersion, {
     Write-Build Yellow 'STAGE: Testing integrity of module manifest'
     [void]( Test-ModuleManifest -Path $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath( "$moduleOutputPath/$script:moduleName.psd1" ) -ErrorAction Stop )
 }
-
+# Package the module into a nuget file for release
 task Package ModuleVersion, {
 
     [System.IO.DirectoryInfo]$modulePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath( "$Script:StagePath/$script:moduleName" )
@@ -99,15 +101,6 @@ task Package ModuleVersion, {
     $module = Get-Module -Name $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath( "$( $modulePath.FullName )/$( $script:moduleName ).psd1" ) -ListAvailable
 
     $fileName = "$( $module.Name ).$Script:ModuleSemVersionString"
-
-    $zipFilePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath( "$Script:ArtifactsPath/$fileName.zip" )
-
-    if ( Test-Path -Path $zipFilePath )
-    {
-        Remove-Item -Path $zipFilePath -Force
-    }
-    Write-Build Yellow "PACKAGE: Creating ZIP file: $fileName.zip"
-    Compress-Archive -Path $modulePath.FullName -DestinationPath $zipFilePath
 
     $nugetFilePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath( "$Script:ArtifactsPath/$fileName.nupkg" )
     if ( Test-Path -Path $nugetFilePath )
@@ -126,7 +119,7 @@ task Package ModuleVersion, {
     }
     Publish-Module -Path $modulePath.FullName -Repository local -confirm:$false -Force
 }
-
+# Conduct unit test for before pr is accepted
 task UnitTest {
 
     $invokePesterParams = @{
@@ -150,7 +143,7 @@ task UnitTest {
     assert ( $testResults.FailedCount -eq 0 ) "Failed $( $testResults.FailedCount ) unit tests"
 
 }
-
+# Version the module if the unit tests pass
 task ModuleVersion -If ( -not ( Get-Variable -Name ModuleVersion -Scope Script -ErrorAction Ignore ) ) {
     #Parses the CHANGELOG.MD to get the base version string
     $moduleVersion = switch -Regex -File $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath( "$BuildRoot/CHANGELOG.md" )
@@ -195,7 +188,7 @@ task ModuleVersion -If ( -not ( Get-Variable -Name ModuleVersion -Scope Script -
 
     Write-Build Yellow "MODULEVERSION: Using ModuleVersion number: $Script:ModuleSemVersionString ( $( $Script:ModuleVersion.ToString() ) )"
 }
-
+# Us the build number from the build agent rather than commit number
 task BuildPackageVersion -If ( -not ( Get-Variable -Name BuildPackageVersion -Scope Script -ErrorAction Ignore ) ) {
     $version = switch -Regex -File $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath( "$BuildRoot/CHANGELOG.md" )
     {

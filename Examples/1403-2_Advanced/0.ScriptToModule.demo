@@ -17,7 +17,7 @@
 # no matter the directory.
 # 
 # The following script copies an igroup and can create portsets
-# to bind to aswell.
+# to bind to as well.
 #
 code "$DemoRoot/Copy-NcIgroup.script.ps1"
 #
@@ -26,7 +26,7 @@ code "$DemoRoot/Copy-NcIgroup.script.ps1"
 . $DemoRoot/Copy-NcIgroup.script.ps1 -IgroupName Example -Vserver TestSVM -NcIgroup $sourceIgroup -NewName 'CopyIgroupScript' -NewPortSetName CopyIgroupScript -NewPortSetPorts iscsi1, iscsi2
 #
 # It is recommended for interactive scripts that they expect a connection already.
-# This is the excpected behavior in the toolkit and other functions aswell.
+# This is the expected behavior in the toolkit and other functions as well.
 #
 Connect-NcController -Name $ClusterName -Credential $cred
 #
@@ -58,7 +58,7 @@ Get-NcIgroup -Name CopyIgroupScript | Remove-NcIgroup -Confirm:$false
 code "$DemoRoot/../../Source/Insight.psd1"
 #
 # A module file or '.psm1' file is executed when the module is imported. 
-# All the code is executed within, similare to a '.ps1'.
+# All the code is executed within, similar to a '.ps1'.
 # This is why we use functions. Functions, when executed, are placed into memory for invocation later.
 code "$DemoRoot/../../Source/Insight.psm1"
 #

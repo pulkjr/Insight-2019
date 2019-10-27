@@ -103,7 +103,7 @@ Invoke-DscResource -Name NetAppCifsShare -Method Get -ModuleName Insight -Proper
 #
 Get-NcCifsShare -Name 'NetAppCifsShareTest$' -VserverContext TestSVM
 # Notice the class is establishing the connection to the cluster and not relying on my session
-# As the DSC resource will be executing on remote machines each resourec will need to be able to 
+# As the DSC resource will be executing on remote machines each resource will need to be able to 
 # establish a session independently of other resources
 #
 Connect-NcController $ClusterName -Credential $Credentials
@@ -117,7 +117,7 @@ Invoke-DscResource -Name NetAppCifsShare -Method Set -ModuleName Insight -Proper
 Invoke-DscResource -Name NetAppCifsShare -Method Test -ModuleName Insight -Property $NetAppCifsShareConfig
 Invoke-DscResource -Name NetAppCifsShare -Method Get -ModuleName Insight -Property $NetAppCifsShareConfig
 #
-# We can also ensure that the resoure isn't present.
+# We can also ensure that the resource isn't present.
 $NetAppCifsShareConfig['Ensure'] = 'Absent'
 #
 Invoke-DscResource -Name NetAppCifsShare -Method Test -ModuleName Insight -Property $NetAppCifsShareConfig

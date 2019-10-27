@@ -1,22 +1,23 @@
-# Check to see if the module is available on this system
+# Check to see if the NetApp DataONTAP PowerShell module is available
+# on this system
 Get-Module -Name DataONTAP -ListAvailable
 
-# Import the NetApp DataONTAP PowerShell module into this session
+# Import the DataONTAP PowerShell module into this session
 Import-Module -Name DataONTAP
 
 # Verify that the module has been imported
 Get-Module -Name DataONTAP
 
-# Show all 'Get' cmdlets available in this module
-Get-Command -Module DataONTAP -Verb Get
+# Show all 'Get-NcVol*' cmdlets available in this module
+Get-Command -Module DataONTAP -Name Get-NcVol*
 
 Clear-Host
 
 # Let's take a quick look at the help for the Connect-NcController cmdlet
 Get-Help Connect-NcController
 
-# Connect to the cluster 'sim96' (returns a 'NcController' object) - will prompt
-# for credentials
+# Connect to the cluster 'sim96' (returns a 'NcController' object) - will
+# prompt for credentials
 Connect-NcController -Name sim96 -Credential (Get-Credential)
 
 # Save the credentials for future connections to this controller
@@ -26,11 +27,12 @@ Add-NcCredential
 # variable
 $global:CurrentNcController
 
+#----
 # We could add more connection objects to this variable using the -Add parameter
 # on the Connect-NcController cmdlet. Any subsequent cmdlet calls will then be
 # performed on each of the connection objects contained within this variable.
 # i.e. Connect-NcController -Name cluster1 -Credential (Get-Credential) -Add
-
+#----
 # Run Get-NcCluster (this would show the cluster-identity-get output from all
 # connection objects stored in the global:CurrentNcController variable)
 Get-NcCluster
@@ -56,3 +58,5 @@ Get-NcCluster -Controller $cluster
 
 # Connect to the cluster again to populate the global variable for the demos
 Connect-NcController -Name sim96
+
+Clear-Host

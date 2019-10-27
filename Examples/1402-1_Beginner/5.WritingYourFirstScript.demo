@@ -7,11 +7,13 @@ Get-Help -Name New-NcVol
 # environment (mounting vols to the root of the namespace).
 code $DemoRoot/NewNtapDataVolume.batch.ps1
 
+# To run this script:
+# .\$DemoRoot\NetNtapDataVolume.batch.ps1 -Name testvol1 -Aggregate n1_InsightSVM -Size 200m -Vserver InsightSVM
+
 # Now we've turned that same 'batch' script into a function.
 # We're able to do some basic error handling and have separate
 # code paths depending on the protocol type specified (CIFS or
-# NFS). This script would be 'dot' sourced into a PowerShell
-# session.
+# NFS).
 code $DemoRoot/NewNtapDataVolume.function.ps1
 
 # Let's walk through how the end user would run this function
@@ -32,8 +34,15 @@ New-NtapDataVolume -Name CifsVol1 -Aggregate n1_Insight -Size 20m -Protocol cifs
 
 # Let's use our calculated property example from earlier to ensure the
 # SecurityStyle property was set correctly.
-Get-NcVol -Name CifsVol1 -Vserver InsightSVM | Select-Object -Property Name, Vserver, @{
-    Name       = 'SecurityStyle'
-    Expression = { $PSItem.VolumeSecurityAttributes.Style }
-}
 
+# --- Commented out here for the purpose of Start-Demo ---
+
+#Get-NcVol -Name CifsVol1 -Vserver InsightSVM | Select-Object -Property Name, Vserver, @{
+#    Name       = 'SecurityStyle'
+#    Expression = { $PSItem.VolumeSecurityAttributes.Style }
+#}
+
+# --- Same command just in one-liner format for Start-Demo
+Get-NcVol -Name CifsVol1 -Vserver InsightSVM | Select-Object -Property Name, Vserver, @{ Name = 'SecurityStyle'; Expression = { $PSItem.VolumeSecurityAttributes.Style } }
+
+Clear-Host

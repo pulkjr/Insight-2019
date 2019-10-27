@@ -4,14 +4,11 @@ Get-NcNode
 # Set the location for all the cluster nodes
 Get-NcNode | Set-NcNode -NodeLocation 'The Matrix'
 
-# View some most common AutoSupport Settings
+# View some most common AutoSupport Settings (Notice the IsSupportEnabled is False)
 Get-NcAutoSupportConfig | Format-Table -Property NodeName, Transport, IsPrivateDataRemoved, IsLocalCollectionEnabled, IsEnabled, IsSupportEnabled
 
 # Enable AutoSupport notifications to support
 Get-NcNode | Set-NcAutoSupportConfig -IsSupportEnabled $true | Format-Table -Property NodeName, Transport, IsPrivateDataRemoved, IsLocalCollectionEnabled, IsEnabled, IsSupportEnabled
-
-# View the disk information
-Get-NcDisk
 
 # Unlock the diag user
 Unlock-NcUser -UserName diag -Vserver sim96
@@ -20,19 +17,20 @@ Unlock-NcUser -UserName diag -Vserver sim96
 Get-NcNetInterface -Role cluster_mgmt
 
 # View the cluster management LIF(s) using Format-List to show all properties
-Get-NcNetInterface -Role cluster_mgmt | fl
+Get-NcNetInterface -Role cluster_mgmt | fl *
 
-# Set the IP address (using $clusterNetInterface.Address)
+# Set the IP address on the interface (in this case, use the current IP so we
+# don't blow up the demo)
 Set-NcNetInterface -Name cluster_mgmt -Address 192.168.44.60 -Netmask 255.255.255.0 -Vserver sim96
 
 # View the DNS settings on the admin Vserver
 Get-NcNetDns -Vserver sim96
 
-# Modify the DNS configuration
+# Modify the DNS configuration (again, using current IP)
 Set-NcNetDns -Vserver sim96 -NameServers 192.168.44.1 -SkipConfigValidation
 
-# Get the ports for a specific node (non cluster ports with an active link)
-Get-NcNetPort -Node sim96-01 -Role !cluster -LinkStatus up
+# Get all non-Cluster role ports with an active link
+Get-NcNetPort -Role !cluster -LinkStatus up
 
 # Disable flow control for all 10GB interfaces
 # Note: Substituting OpSpeed of 1000 since I'm using a simulator
@@ -50,5 +48,6 @@ Get-NcAggr
 # Create a new aggregate (and enable free space reallocation)
 New-NcAggr -Node sim96-01 -Name n1_Insight -DiskCount 3 -RaidSize 16 -ForceSmallAggregate
 Get-NcAggrOption -Name n1_Insight | sort Name
-Set-NcAggrOption -Name n1_Insight -Key free_space_realloc -Value on
-Get-NcAggrOption -Name n1_Insight | ? { $_.Name -eq 'free_space_realloc' }
+Set-NcAggrOption -Name n1_Insight -Key free_space_realloc -Value on | Get-NcAggrOption  | ? { $_.Name -eq 'free_space_realloc' }
+
+Clear-Host

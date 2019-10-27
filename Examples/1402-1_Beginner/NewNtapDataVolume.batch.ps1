@@ -2,7 +2,7 @@ param ($Name, $Aggregate, $Size, $Vserver)
 
 ipmo DataONTAP
 
-Connect-NcController den-cdot (Get-Credential)
+Connect-NcController sim96 (Get-Credential)
 
 $params = @{
     Name           = $Name

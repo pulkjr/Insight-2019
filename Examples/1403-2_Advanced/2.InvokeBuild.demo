@@ -8,9 +8,12 @@
 #
 # InvokeBuild - CICD Demo
 #
-# Now that we have taken a complete look at some functions and the module layout let us review a quick build process.
-# To do this I use the module InvokeBuild. InvokeBuild allows us to divide the build process into tasks and fire them
-# off in any order that we desire. This means that our local machines can build different from out server does.
+# Now that we have taken a complete look at some functions and the module layout 
+# let us review a quick build process. The build process facilitates continual improvement,
+# continual deployment to users of the module.
+#
+# To do this I use the module InvokeBuild. InvokeBuild allows us to divide the build process into tasks and execute them
+# in any order that we desire. This means that our local machines can build different from our build server does.
 #
 code "$DemoRoot/../../.build.ps1"
 #
@@ -18,27 +21,36 @@ code "$DemoRoot/../../.build.ps1"
 # It will then update the module version based on the the change log.
 #
 # Two main folders will be created during the build process: artifacts and stage
-Get-ChildItem -Name "$DemoRoot/../.." -Directory | sort Name
+Get-ChildItem -Name "$DemoRoot/../.." -Directory | Sort-Object Name
 #
 Get-Module -Name Insight -ListAvailable
 #
 # In the .build.ps1 file I have the tasks specified for a generic build. This results in the following command:
-# Invoke-Build -Task InstallDependencies, Stage, Package
+# Invoke-Build -Task Stage, Package
 Invoke-Build
 #
-# The build has created a couple files for release of the module
-Get-ChildItem -Name "$DemoRoot/../../artifacts" | sort Name
+# Invoke Build has created a new 'psm1' file with the contents of all the 'ps1' files. 
+# This is can speed up the importing of the module.
 #
-# A new 'local' repository has been created on my system
+code "$DemoRoot/../../Stage/Insight/Insight.psm1"
+#
+# The build has packaged the module into a nuget file for release.
+Get-ChildItem -Name "$DemoRoot/../../artifacts" | Sort-Object Name
+#
+# To show the release and update process Publish-Module was used to a local repository
+# pointing to the 'artifacts' directory.
 Get-PSRepository -Name local
 #
 # This repository has the module that I just built
 #
-Find-Module -Repository Local -WarningAction SilentlyContinue
+Find-Module -Repository Local
 #
 # I can now use Install-Module to load it onto my system.
 #
 Install-Module -Repository Local -Name Insight
+#
+# The module is now on the machine and can be imported at anytime without specifying the path.
+Get-Module -ListAvailable Insight
 #
 # I can review the newly installed module using the typical commands:
 Import-Module Insight

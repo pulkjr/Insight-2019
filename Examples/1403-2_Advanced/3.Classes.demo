@@ -9,7 +9,8 @@
 #
 # Classes Demo
 #
-# Th Classe is very basic but shows how we could use a class rather than a subfunction
+# The Class is very basic but shows how we could use a class rather than a subfunctions
+# or private function. This allows one to unit test subfunction.
 code "$DemoRoot/../../Source/Private/Insight.Class.ps1"
 #
 # We know the class is in the module so lets import it first
@@ -21,15 +22,18 @@ $insight = [InsightBase]::new()
 #
 # The class has not been exported to this scope. It is in the module scope.
 # We can access it from within the Module scope.
+# The object System.Management.Automation.PSModuleInfo has an 'invoke' method that allows
+# you to execute code within that scope. This can also be used for troubleshooting private functions.
+#
 $insight = ( Get-Module Insight ).Invoke( { [InsightBase]::new() } )
 #
 # The variable now contains the object and all methods associated.
 $insight.GetVolume('TestSVM_lun')
 #
-# In the module you can also access the static modules directly
+# In the module you can also access the static methods directly
 ( Get-Module Insight ).Invoke( { [InsightBase]::ConvertAsciiToHex('ABCD') } )
 #
-# Now if we want to access this class outside of the module we need to specify a using statement
+# Now if we want to access this class outside of the module we need to specify the using statement
 using module Insight
 #
 # We can now directly access the class and it's static methods

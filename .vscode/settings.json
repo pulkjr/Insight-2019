@@ -2,5 +2,20 @@
   "powershell.codeFormatting.openBraceOnSameLine": false,
   "files.associations": {
     "*.demo": "powershell"
-  }
+  },
+  "cSpell.words": [
+    "Aggr",
+    "CICD",
+    "CIFS",
+    "Igroup",
+    "ONTAP",
+    "Portset",
+    "Vserver",
+    "dataontap",
+    "hashtable",
+    "iscsi",
+    "NetApp",
+    "nuget",
+    "portsets"
+  ]
 }

@@ -12,8 +12,12 @@
 #
 # Functions and Modules Demo
 #
-# If you are not using functions already I highly advise you to. They provide the ability to call the command from any location no matter the directory.
-# The following piece of code is a script that collects the Volume Moves that are in progress then retypes their objects
+# If you are not using functions already I highly advise you to. 
+# They provide the ability to call the command from any location 
+# no matter the directory.
+# 
+# The following script copies an igroup and can create portsets
+# to bind to as well.
 #
 code "$DemoRoot/Copy-NcIgroup.script.ps1"
 #
@@ -21,7 +25,8 @@ code "$DemoRoot/Copy-NcIgroup.script.ps1"
 #
 . $DemoRoot/Copy-NcIgroup.script.ps1 -IgroupName Example -Vserver TestSVM -NcIgroup $sourceIgroup -NewName 'CopyIgroupScript' -NewPortSetName CopyIgroupScript -NewPortSetPorts iscsi1, iscsi2
 #
-# The script expects a connection to the cluster already. To do this use Connect-NcController <Name>
+# It is recommended for interactive scripts that they expect a connection already.
+# This is the expected behavior in the toolkit and other functions as well.
 #
 Connect-NcController -Name $ClusterName -Credential $cred
 #
@@ -29,32 +34,40 @@ Connect-NcController -Name $ClusterName -Credential $cred
 #
 $global:CurrentNcController
 #
+# Validate the igroup exists on the clusters.
+#
 Get-NcIgroup -Vserver TestSVM -Name Example
 #
 # With a valid connection in memory we can run the command again and should have success.
 . $DemoRoot/Copy-NcIgroup.script.ps1 -IgroupName Example -Vserver TestSVM -NcIgroup $sourceIgroup -NewName 'CopyIgroupScript' -NewPortSetName CopyIgroupScript -NewPortSetPorts iscsi1, iscsi2
 #
+# NOTICE: The script returned the object created. This is a best practice.
+#
 Get-NcIgroup -Vserver TestSVM -Name CopyIgroupScript
 #
 # This script is basic but it gets the job done.
 # You may want to share this script with your co-workers
-# A module is a great way to do this. The module is made up of a couple different parts. Let's cleanup and look at them.
-~Get-NcIgroup -Name CopyIgroupScript | Remove-NcIgroup -Confirm:$false
+# A module is a great way to do this. The module is made up of a couple different parts. 
+# Let's cleanup and look at the parts.
+Get-NcIgroup -Name CopyIgroupScript | Remove-NcIgroup -Confirm:$false
 ~Get-NcPortset -Name CopyIgroupScript | Remove-NcPortset -Confirm:$false
 ~Clear-Host
 #
-# The Manifest describes the content of the module. Manifests are psd1 files. You can use New-ModuleManifest to create a manifest.
+# The Manifest describes the content of the module. 
+# Manifests are '.psd1' files. You can use New-ModuleManifest to create your own manifest.
 code "$DemoRoot/../../Source/Insight.psd1"
 #
-# A module file or '.psm1' file is executed when the module is imported. All the code is executed.
+# A module file or '.psm1' file is executed when the module is imported. 
+# All the code is executed within, similar to a '.ps1'.
 # This is why we use functions. Functions, when executed, are placed into memory for invocation later.
 code "$DemoRoot/../../Source/Insight.psm1"
 #
 # There are many different approaches to psm1 files. For the first scenario we are going to use 'dot' sourcing.
-# The module reads the manifest FileList property and 'dot' sources / executes the ps1 files. This places the functions
-# into the module scope for use. Now while the module is loaded the functions will be made available.
+# The module retrieves the child items 'ps1' files then 'dot' sources / executes them. 
+# This places the functions into the module scope for use. Now while the module is loaded the 
+# functions that are exported will be made available.
 # Just like the DataONTAP module you can load your new module with import-module. For this example lets use the
-# path to the psd1 file.
+# path to the psd1 file. As the module is not in one of the standard locations.
 #
 Import-Module "$DemoRoot/../../Source/Insight.psd1"
 #
@@ -65,6 +78,8 @@ Get-Module
 # You can validate the module has exported public functions with Get-Command
 #
 Get-Command -Module Insight
+#
+# Notice all the functions exported are displayed
 #
 Get-Help -Name Copy-NcIgroup
 Get-Help -Name Copy-NcIgroup -Examples
@@ -84,7 +99,7 @@ Get-NcIgroup -Vserver TestSVM -Name Example
 #
 Get-NcIgroup -Vserver TestSVM -Name Example | Copy-NcIgroup -Vserver TestSVM -NewName CopyIgroupFunction -NewPortSetName CopyIgroupFunction -NewPortSetPorts iscsi1, iscsi2 -Verbose
 #
-# The output from this command is an Igroup that can be used down the pipeline in another function.
+# The output from this command is an Igroup object that can be used down the pipeline in another function.
 #
 ~Get-NcIgroup -Name CopyIgroupFunction | Remove-NcIgroup -Confirm:$false
 ~Get-NcPortset -Vserver TestSVM -Name CopyIgroupFunction | Remove-NcPortset -Confirm:$false

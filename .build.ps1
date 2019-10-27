@@ -188,7 +188,7 @@ task ModuleVersion -If ( -not ( Get-Variable -Name ModuleVersion -Scope Script -
 
     Write-Build Yellow "MODULEVERSION: Using ModuleVersion number: $Script:ModuleSemVersionString ( $( $Script:ModuleVersion.ToString() ) )"
 }
-# Us the build number from the build agent rather than commit number
+# Use the build number from the build agent rather than commit number
 task BuildPackageVersion -If ( -not ( Get-Variable -Name BuildPackageVersion -Scope Script -ErrorAction Ignore ) ) {
     $version = switch -Regex -File $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath( "$BuildRoot/CHANGELOG.md" )
     {

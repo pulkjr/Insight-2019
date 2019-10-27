@@ -14,7 +14,7 @@ Get-NcNetInterface -Name insight_data1 -Vserver InsightSVM | Select-Object -Prop
 Move-NcNetInterface -Name insight_data1 -Vserver InsightSVM -DestinationNode sim96-02
 
 # Let's make sure that node change took affect
-Get-NcNetInterface -Name insight_data1 -Vserver InsightSVM | Select-Object -Property InterfaceName, CurrentNode, HomeNode, CurrentPort, HomePort
+Get-NcNetInterface -Name insight_data1 -Vserver InsightSVM | Select-Object -Property InterfaceName, CurrentNode, HomeNode
 
 # Set the HomeNode property
 Set-NcNetInterface -Name insight_data1 -Vserver InsightSVM -Node sim96-02 | Format-List -Property InterfaceName, CurrentNode, HomeNode
@@ -29,4 +29,4 @@ Remove-NcNetInterface -Name insight_data1 -Vserver InsightSVM -WhatIf
 Remove-NcNetInterface -Name insight_data1 -Vserver InsightSVM -Confirm
 
 # Let's make sure the LIF is no longer present
-Get-NcNetInterface -Name insight_data1 -Vserver InsightSVM | Select-Object -Property InterfaceName, CurrentNode, HomeNode, CurrentPort, HomePort
+Get-NcNetInterface -Name insight_data1 -Vserver InsightSVM

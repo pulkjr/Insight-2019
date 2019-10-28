@@ -34,7 +34,7 @@ Get-NcNetPort -Role !cluster -LinkStatus up
 
 # Disable flow control for all 10GB interfaces
 # Note: Substituting OpSpeed of 1000 since I'm using a simulator
-Get-NcNetPort | Where-Object { $_.PortType -eq 'physical' -and $_.OperationalSpeed -eq 1000 } | Set-NcNetPort -FlowControl none -WarningAction SilentlyContinue
+Get-NcNetPort | Where-Object { $_.PortType -eq 'physical' -and $_.OperationalSpeed -eq 1000 } | Set-NcNetPort -FlowControl none -WarningAction SilentlyContinue | Format-Table -Property Node, Port, AdministrativeFlowcontrol
 
 # Create a new broadcast domain and assign ports
 New-NcNetPortBroadcastDomain -Name bcast1 -Mtu 1500 -Port sim96-01:e0e, sim96-01:e0f, sim96-02:e0e, sim96-02:e0f

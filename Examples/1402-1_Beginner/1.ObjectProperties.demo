@@ -7,15 +7,7 @@ $vol
 # Note that this object has subobjects (fairly complicated object)
 $vol | Get-Member
 
-# Why are we only seeing a few of the properties in the table?
-# Maybe there is a format view definition for this object type?
-# Let's look at the Type of the object (FullName).
-$vol.GetType().FullName
-
-# Is there a format view definition for this type?
-Get-FormatData -TypeName $vol.GetType().FullName
-
-# How do see more properties? We can use Format-List
+# How do see the other properties? We can use Format-List
 $vol | Format-List *
 
 # We can specify properties we want to see using Format-List or Format-Table
@@ -24,9 +16,9 @@ $vol | Format-Table -Property Name, Vserver, TotalSize
 # Where do we find, for instance, the SecurityStyle property?
 $vol.VolumeSecurityAttributes | fl *
 
-# How can we access that using Select-Object (in addition to other properties)?
-# We can use the 'calculated properties' capability with Select-Object (or the
-# Format-List/Format-Table cmdlets)
+# How can we access that using Select-Object? We can use
+# the 'calculated properties' capability with Select-Object
+# (or the Format-List/Format-Table cmdlets)
 
 # --- Commented out here for the purpose of Start-Demo ---
 

@@ -1,32 +1,39 @@
-# Create a new SVM
+# Create a new SVM called InsightSVM with the root volume
+# on the new n1_Insight aggr
 New-NcVserver -Name InsightSVM -RootVolume InsightSVM_root -RootVolumeAggregate n1_Insight -NameServerSwitch ldap -RootVolumeSecurityStyle unix -Language en_US.UTF-8
 
-# View the new SVM
-Get-NcVserver -Name InsightSVM | Format-List
+# View the new SVM properties
+Get-NcVserver -Name InsightSVM | Format-List *
 
-# Create a new LIF
+# Create a new LIF called insight_data1
 New-NcNetInterface -Name insight_data1 -Vserver InsightSVM -Role data -Node sim96-01 -Port e0e -DataProtocols cifs, nfs -Address 2.2.2.2 -Netmask 255.255.255.0
 
-# Take a closer look at certain interface properties
+# Take a closer look at Current and Home Node/Port settings
 Get-NcNetInterface -Name insight_data1 -Vserver InsightSVM | Select-Object -Property InterfaceName, CurrentNode, HomeNode, CurrentPort, HomePort
 
 # Move a LIF to a different node
-Move-NcNetInterface -Name insight_data1 -Vserver InsightSVM -DestinationNode sim96-02
+Move-NcNetInterface -Name insight_data1 -Vserver InsightSVM -DestinationNode sim96-02 | Out-Null
 
-# Let's make sure that node change took affect
-Get-NcNetInterface -Name insight_data1 -Vserver InsightSVM | Select-Object -Property InterfaceName, CurrentNode, HomeNode
+# Let's make sure that node change was successful
+Get-NcNetInterface -Name insight_data1 -Vserver InsightSVM | Select-Object -Property InterfaceName, CurrentNode, HomeNode, CurrentPort, HomePort
 
 # Set the HomeNode property
-Set-NcNetInterface -Name insight_data1 -Vserver InsightSVM -Node sim96-02 | Format-List -Property InterfaceName, CurrentNode, HomeNode
+Set-NcNetInterface -Name insight_data1 -Vserver InsightSVM -Node sim96-02 | Out-Null
+
+# Once again, just make sure the change was successful
+Get-NcNetInterface -Name insight_data1 -Vserver InsightSVM | Select-Object -Property InterfaceName, CurrentNode, HomeNode, CurrentPort, HomePort
 
 # Remove a LIF (First set to admin down)
 Set-NcNetInterface -Name insight_data1 -Vserver InsightSVM -AdministrativeStatus down
 
-# Note: All the toolkit cmdlets that 'do' something support the native -WhatIf parameter (SupportsShouldProcess)
+# Note: All the toolkit cmdlets that 'do' something support the native
+# -WhatIf parameter (and -Confirm)
 Remove-NcNetInterface -Name insight_data1 -Vserver InsightSVM -WhatIf
 
-# Now let's remove it for realz (but prompt for approval)
-Remove-NcNetInterface -Name insight_data1 -Vserver InsightSVM -Confirm
+# Now let's remove it for real
+Remove-NcNetInterface -Name insight_data1 -Vserver InsightSVM
 
 # Let's make sure the LIF is no longer present
 Get-NcNetInterface -Name insight_data1 -Vserver InsightSVM
+
+Clear-Host

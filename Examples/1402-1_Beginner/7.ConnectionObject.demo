@@ -15,3 +15,5 @@ Get-NcVol
 
 # Always set the .Vserver property back to $null when done
 $global:CurrentNcController.Vserver = $null
+
+Clear-Host

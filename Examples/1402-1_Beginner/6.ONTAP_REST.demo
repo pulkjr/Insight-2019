@@ -34,7 +34,8 @@ $svm.records.Count
 $svm.records[1]
 
 # Wait, where are all the properties?
-# We need to use fields='*' to get everything (this can be expensive so request only what is necessary)
+# We need to use fields='*' to get everything (this can be expensive so request
+# only what is necessary)
 $uri = 'https://sim96/api/svm/svms?fields=*'
 $svm = Invoke-RestMethod -Method Get -Uri $uri -Credential $cred
 
@@ -62,3 +63,5 @@ Invoke-RestMethod -Method Patch -Uri $uri -Body '{ "state": "offline" }' -Creden
 
 # ZAPI is still available until 3 years from the 9.6 release
 Get-NcVol -Name test_offline
+
+Clear-Host

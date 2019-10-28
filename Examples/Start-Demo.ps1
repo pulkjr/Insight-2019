@@ -285,7 +285,7 @@ Running demo: $File
                 # Previous
                 Write-Host -ForegroundColor $HelpColor "<Back one Line>"
 
-                while ( $_lines[--$_i].Trim().StartsWith( "#" ) ) { }
+                while ( $_lines[--$_i].Trim().StartsWith( "#" ) ) { $_i-- }
 
                 $_i-- # back a line, we're gonna step forward when we loop
             }
